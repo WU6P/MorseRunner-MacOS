@@ -251,7 +251,7 @@
   <Compiler>
     <Version Value="21"/>
     <Target>
-      <Filename Value="MorseRunner"/>
+      <Filename Value="MR_mac"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

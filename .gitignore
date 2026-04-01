@@ -15,8 +15,9 @@ symbol_order*.fpc
 ppaslink.sh
 
 # Binaries
-MorseRunner
+MR_mac
 MorseRunner.app
+MorseRunner.zip
 
 # Test/debug binaries
 src/Phase2Test

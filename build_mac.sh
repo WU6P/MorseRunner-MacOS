@@ -14,8 +14,6 @@ if [ ! -x "$LD_OLD" ]; then
   exit 1
 fi
 
-# Run lazbuild. It will compile Pascal → assemble → then try to link with the
-# new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
 mkdir -p lib/aarch64-darwin
 
 # Compile Objective-C backend (CoreAudio wrapper)
@@ -26,6 +24,8 @@ clang -c src/VCL/AudioBackend2.m \
   -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk \
   -o AudioBackend2.o
 
+# Run lazbuild. It will compile Pascal → assemble → then try to link with the
+# new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
 echo "=== Compiling ==="
 /Applications/Lazarus/lazbuild MorseRunner.lpi \
   --build-all \
@@ -36,45 +36,45 @@ echo "=== Compiling ==="
   2>&1 || true   # ignore error; we'll check if ppaslink.sh needs patching
 
 # If lazbuild succeeded (produced binary directly), great.
-if [ -x MorseRunner ] && [ MorseRunner -nt ppaslink.sh ]; then
+if [ -x MR_mac ] && [ MR_mac -nt ppaslink.sh ]; then
   echo "=== Build successful (no ld patch needed) ==="
-  exit 0
-fi
-
-# Patch ppaslink.sh to use ld-classic
-if [ ! -f ppaslink.sh ]; then
-  echo "ERROR: ppaslink.sh not found — compile step failed completely"
-  exit 1
-fi
-
-if grep -q "$LD_NEW " ppaslink.sh && ! grep -q "ld-classic" ppaslink.sh; then
-  echo "=== Patching ppaslink.sh: ld → ld-classic ==="
-  sed -i '' "s|${LD_NEW} |${LD_OLD} |g" ppaslink.sh
-fi
-
-echo "=== Linking with ld-classic ==="
-bash ppaslink.sh
-
-if [ -x MorseRunner ]; then
-  echo "=== Build successful: MorseRunner ==="
-  file MorseRunner
-  otool -l MorseRunner | grep -A3 "minos\|platform" | head -12
 else
-  echo "ERROR: MorseRunner not produced"
+  # Patch ppaslink.sh to use ld-classic
+  if [ ! -f ppaslink.sh ]; then
+    echo "ERROR: ppaslink.sh not found — compile step failed completely"
+    exit 1
+  fi
+
+  if grep -q "$LD_NEW " ppaslink.sh && ! grep -q "ld-classic" ppaslink.sh; then
+    echo "=== Patching ppaslink.sh: ld → ld-classic ==="
+    sed -i '' "s|${LD_NEW} |${LD_OLD} |g" ppaslink.sh
+  fi
+  # Rename output binary from MorseRunner to MR_mac
+  sed -i '' "s|-o $(pwd)/MorseRunner |-o $(pwd)/MR_mac |g" ppaslink.sh
+
+  echo "=== Linking with ld-classic ==="
+  bash ppaslink.sh
+fi
+
+if [ ! -x MR_mac ]; then
+  echo "ERROR: MR_mac not produced"
   exit 1
 fi
 
-# Build .app bundle so macOS activates it properly (keyboard focus)
+echo "=== Build successful: MR_mac ==="
+file MR_mac
+otool -l MR_mac | grep -A3 "minos\|platform" | head -12
+
+# Build self-contained MorseRunner.app bundle
 echo "=== Building MorseRunner.app bundle ==="
 APP=MorseRunner.app
 MACOS="$APP/Contents/MacOS"
 RES="$APP/Contents/Resources"
+rm -rf "$APP"
 mkdir -p "$MACOS" "$RES"
 
-# Copy binary only if not already there (lazbuild may put it directly in MacOS/)
-if [ "$(realpath MorseRunner 2>/dev/null)" != "$(realpath "$MACOS/MorseRunner" 2>/dev/null)" ]; then
-  cp MorseRunner "$MACOS/MorseRunner"
-fi
+# Copy binary (real copy, not symlink — required for distribution)
+cp MR_mac "$MACOS/MorseRunner"
 codesign --force --deep -s - "$MACOS/MorseRunner" 2>/dev/null || true
 
 # Copy data files into Resources
@@ -110,3 +110,8 @@ PLIST
 
 codesign --force --deep -s - "$APP" 2>/dev/null || true
 echo "=== MorseRunner.app bundle ready ==="
+
+# Create distributable zip
+echo "=== Creating MorseRunner.zip ==="
+ditto -c -k --sequesterRsrc --keepParent "$APP" MorseRunner.zip
+echo "=== Done: MorseRunner.zip ==="

@@ -762,8 +762,10 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  // On macOS, when launched from Terminal the terminal retains keyboard focus.
-  // Use LCLIntf to bring this window to front after it is shown.
+  // Ensure the app is the active application regardless of how it was launched
+  // (Finder, Spotlight, or Terminal). activateIgnoringOtherApps is needed on
+  // macOS so the Cocoa window becomes key and text fields accept input.
+  Application.BringToFront;
   SetForegroundWindow(Handle);
   Edit4.SetFocus;
 end;
