@@ -16,8 +16,19 @@ fi
 
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
 # new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
+mkdir -p lib/aarch64-darwin
+
+# Compile Objective-C backend (CoreAudio wrapper)
+echo "=== Compiling AudioBackend2.m ==="
+clang -c src/VCL/AudioBackend2.m \
+  -arch arm64 \
+  -mmacosx-version-min=11.0 \
+  -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk \
+  -o AudioBackend2.o
+
 echo "=== Compiling ==="
 /Applications/Lazarus/lazbuild MorseRunner.lpi \
+  --build-all \
   --ws=cocoa \
   --compiler=/usr/local/bin/fpc \
   --cpu=aarch64 \
