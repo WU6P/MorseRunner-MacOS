@@ -1,0 +1,28 @@
+# FPC/Lazarus compiled artifacts
+lib/
+*.ppu
+*.o
+*.a
+*.compiled
+
+# Linker temp files
+link*.res
+linkfiles*.res
+symbol_order*.fpc
+ppaslink.sh
+
+# Binaries
+MorseRunner
+MorseRunner.app
+
+# Test/debug binaries
+src/Phase2Test
+src/Test/TestRunner
+src/VCL/remap
+
+# Logs and temp
+*.log
+ttt/
+
+# macOS
+.DS_Store
