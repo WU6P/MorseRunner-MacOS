@@ -28,5 +28,11 @@ src/VCL/remap
 *.log
 ttt/
 
+# User config (generated at runtime)
+MorseRunner.ini
+
+# Lazarus IDE backups
+src/backup/
+
 # macOS
 .DS_Store

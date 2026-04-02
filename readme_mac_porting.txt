@@ -8,7 +8,7 @@ practice simulator originally written in Object Pascal (Delphi/RAD Studio) for
 Windows. It simulates realistic contest pile-ups so operators can practice copying
 callsigns and exchanges at speed.
 
-This repository is a native macOS port targeting Apple M1 (ARM64). The port
+This repository is a native macOS port targeting Apple M1 and beyond (ARM64). The port
 translates the original Windows/VCL codebase to run under Lazarus/FPC with the
 LCL Cocoa widgetset, while keeping all contest logic, station simulation, and Morse
 keyer code unchanged. Audio is handled through CoreAudio via a small Objective-C
@@ -89,6 +89,10 @@ Key library substitutions
   Linker            MSVC linker                         →  ld-classic (see below)
   Build system      .dproj                              →  build_mac.sh
 
+
+Support
+-------
+  The porting job is done by Nian WU6P. He can be found on QRZ.
 
 License
 -------

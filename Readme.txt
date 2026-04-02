@@ -1,3 +1,10 @@
+
+###
+  For the MacOS porting, refer to readme_mac_porting.txt
+  73   Nian WU6P
+###
+
+
                                 MORSE RUNNER
                               Contest Simulator
                                   freeware
