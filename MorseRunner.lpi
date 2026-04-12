@@ -246,42 +246,17 @@
       </Unit>
     </Units>
   </ProjectOptions>
-  <Compiler>
-    <Version Value="21"/>
-    <Target>
-      <Filename Value="MorseRunner"/>
-    </Target>
-    <SearchPaths>
-      <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="src;src/VCL;src/Util"/>
-      <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
-    </SearchPaths>
+  <CompilerOptions>
+    <Version Value="11"/>
     <Parsing>
       <SyntaxOptions>
-        <SyntaxMode Value="Delphi"/>
-        <UseAnsiStrings Value="True"/>
+        <UseAnsiStrings Value="False"/>
       </SyntaxOptions>
     </Parsing>
-    <CodeGeneration>
-      <TargetCPU Value="aarch64"/>
-      <TargetOS Value="darwin"/>
-      <Optimizations>
-        <OptimizationLevel Value="1"/>
-      </Optimizations>
-    </CodeGeneration>
     <Linking>
       <Debugging>
-        <GenerateDebugInfo Value="False"/>
+        <DebugInfoType Value="dsDwarf3"/>
       </Debugging>
-      <Options>
-        <LinkerOptions Value="-ld_classic -syslibroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk -framework Cocoa -framework Foundation -framework AppKit -framework AudioToolbox -framework CoreAudio -framework CoreFoundation"/>
-      </Options>
     </Linking>
-    <Other>
-      <!-- macOS 11.0 minimum for Apple Silicon (aarch64) -->
-      <!-- $(ProjPath) expands to the absolute project directory with trailing slash -->
-      <CustomOptions Value="-WM11.0 -Fu$(ProjPath)src -Fu$(ProjPath)src/VCL -Fu$(ProjPath)src/Util"/>
-      <CompilerPath Value="/usr/local/bin/fpc"/>
-    </Other>
-  </Compiler>
+  </CompilerOptions>
 </CONFIG>

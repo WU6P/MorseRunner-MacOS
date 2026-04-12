@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 120
+  Left = 70
   Height = 544
-  Top = 143
+  Top = 156
   Width = 764
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -44,21 +44,21 @@ object MainForm: TMainForm
     ParentBackground = False
     TabOrder = 0
     object Label1: TLabel
-      Left = 29
+      Left = 16
       Height = 15
       Top = 12
       Width = 21
       Caption = 'Call'
     end
     object Label2: TLabel
-      Left = 160
+      Left = 140
       Height = 15
       Top = 12
       Width = 23
       Caption = 'RST'
     end
     object Label3: TLabel
-      Left = 232
+      Left = 219
       Height = 15
       Top = 12
       Width = 16
@@ -140,7 +140,7 @@ object MainForm: TMainForm
       Left = 279
       Height = 123
       Top = 6
-      Width = 6
+      Width = 1
     end
     object Edit1: TEdit
       Left = 12
@@ -158,6 +158,7 @@ object MainForm: TMainForm
       TabOrder = 0
       OnChange = Edit1Change
       OnEnter = Edit1Enter
+      OnExit = Edit1Exit
       OnKeyPress = Edit1KeyPress
     end
     object Edit2: TEdit
@@ -175,6 +176,7 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 1
       OnEnter = Edit2Enter
+      OnExit = Edit2Exit
       OnKeyPress = Edit2KeyPress
     end
     object Edit3: TEdit
@@ -192,11 +194,12 @@ object MainForm: TMainForm
       ParentFont = False
       TabOrder = 2
       OnEnter = Edit3Enter
+      OnExit = Edit3Exit
       OnKeyPress = Edit3KeyPress
       OnKeyUp = Edit3KeyUp
     end
     object Panel2: TPanel
-      Left = 529
+      Left = 552
       Height = 33
       Top = 0
       Width = 191

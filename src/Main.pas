@@ -255,6 +255,9 @@ type
     procedure Edit1Enter(Sender: TObject);
     procedure Edit2Enter(Sender: TObject);
     procedure Edit3Enter(Sender: TObject);
+    procedure Edit1Exit(Sender: TObject);
+    procedure Edit2Exit(Sender: TObject);
+    procedure Edit3Exit(Sender: TObject);
     procedure Edit1Change(Sender: TObject);
     procedure Edit2Change(Sender: TObject);
     procedure Edit3Change(Sender: TObject);
@@ -763,9 +766,8 @@ end;
 procedure TMainForm.FormShow(Sender: TObject);
 begin
   // On macOS, when launched from Terminal the terminal retains keyboard focus.
-  // Activate the application and give focus to the input field.
-  Application.Activate;
-  SetForegroundWindow(Handle);
+  // BringToFront activates the entire app, SetFocus gives focus to the input field.
+  Application.BringToFront;
   Edit4.SetFocus;
 end;
 
@@ -995,6 +997,13 @@ begin
       end;
     ';': // <his> <#>
       begin
+        // Remove the semicolon from the active field (it's a trigger, not content)
+        if ActiveControl is TEdit then
+        begin
+          with TEdit(ActiveControl) do
+            if (Length(Text) > 0) and (Text[Length(Text)] = ';') then
+              Text := Copy(Text, 1, Length(Text) - 1);
+        end;
         Tst.OnExchangeEditComplete;
         SendMsg(msgHisCall);
         SendMsg(msgNr);
@@ -1016,7 +1025,13 @@ begin
     ' ': // advance to next exchange field
       if (ActiveControl <> ExchangeEdit) and
          not ((ActiveControl = Edit3) and (SimContest = scArrlSS)) then
-        ProcessSpace
+      begin
+        // Trim leading/trailing spaces from the current field before moving
+        if ActiveControl is TEdit then
+          TEdit(ActiveControl).Text := Trim(TEdit(ActiveControl).Text);
+        ProcessSpace;
+        Key := #0;  // Prevent space from being inserted into the field
+      end
       else
         Exit;
   else
@@ -1270,6 +1285,24 @@ end;
 procedure TMainForm.Edit4Change(Sender: TObject);
 begin
   UserCallsignDirty := True;
+end;
+
+procedure TMainForm.Edit1Exit(Sender: TObject);
+begin
+  // Trim leading/trailing spaces from His Call field
+  Edit1.Text := Trim(Edit1.Text);
+end;
+
+procedure TMainForm.Edit2Exit(Sender: TObject);
+begin
+  // Trim leading/trailing spaces from His RST field
+  Edit2.Text := Trim(Edit2.Text);
+end;
+
+procedure TMainForm.Edit3Exit(Sender: TObject);
+begin
+  // Trim leading/trailing spaces from His Number field
+  Edit3.Text := Trim(Edit3.Text);
 end;
 
 procedure TMainForm.Edit4Exit(Sender: TObject);
@@ -1890,7 +1923,12 @@ end;
 
 
 procedure TMainForm.Edit1Change(Sender: TObject);
+var
+  TrimmedText: string;
 begin
+  TrimmedText := Trim(Edit1.Text);
+  if TrimmedText <> Edit1.Text then
+    Edit1.Text := TrimmedText;
   Globals.GEdit1Text := Edit1.Text;
   if Edit1.Text = '' then
     NrSent := false;
@@ -1900,13 +1938,23 @@ end;
 
 
 procedure TMainForm.Edit2Change(Sender: TObject);
+var
+  TrimmedText: string;
 begin
+  TrimmedText := Trim(Edit2.Text);
+  if TrimmedText <> Edit2.Text then
+    Edit2.Text := TrimmedText;
   Globals.GEdit2Text := Edit2.Text;
 end;
 
 
 procedure TMainForm.Edit3Change(Sender: TObject);
+var
+  TrimmedText: string;
 begin
+  TrimmedText := Trim(Edit3.Text);
+  if TrimmedText <> Edit3.Text then
+    Edit3.Text := TrimmedText;
   Globals.GEdit3Text := Edit3.Text;
 end;
 

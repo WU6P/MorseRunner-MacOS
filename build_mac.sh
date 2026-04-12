@@ -14,6 +14,19 @@ if [ ! -x "$LD_OLD" ]; then
   exit 1
 fi
 
+# Ensure AudioBackend2.o is present and up-to-date
+if [ ! -f AudioBackend2.o ] || [ src/VCL/AudioBackend2.m -nt AudioBackend2.o ]; then
+  echo "=== Rebuilding AudioBackend2.o ==="
+  /Library/Developer/CommandLineTools/usr/bin/clang -c \
+    -fPIC \
+    -arch arm64 \
+    -mmacosx-version-min=11.0 \
+    -fno-objc-arc \
+    -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk \
+    -o AudioBackend2.o \
+    src/VCL/AudioBackend2.m
+fi
+
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
 # new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
 echo "=== Compiling ==="
