@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 238
+  Left = 120
   Height = 544
-  Top = 115
+  Top = 143
   Width = 764
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -44,21 +44,21 @@ object MainForm: TMainForm
     ParentBackground = False
     TabOrder = 0
     object Label1: TLabel
-      Left = 16
+      Left = 29
       Height = 15
       Top = 12
       Width = 21
       Caption = 'Call'
     end
     object Label2: TLabel
-      Left = 140
+      Left = 160
       Height = 15
       Top = 12
       Width = 23
       Caption = 'RST'
     end
     object Label3: TLabel
-      Left = 224
+      Left = 232
       Height = 15
       Top = 12
       Width = 16
@@ -137,10 +137,10 @@ object MainForm: TMainForm
       OnClick = SendClick
     end
     object Bevel2: TBevel
-      Left = 277
+      Left = 279
       Height = 123
       Top = 6
-      Width = 2
+      Width = 6
     end
     object Edit1: TEdit
       Left = 12
@@ -196,9 +196,9 @@ object MainForm: TMainForm
       OnKeyUp = Edit3KeyUp
     end
     object Panel2: TPanel
-      Left = 552
+      Left = 529
       Height = 33
-      Top = 5
+      Top = 0
       Width = 191
       BevelOuter = bvLowered
       Caption = '00:00:00'
@@ -301,17 +301,17 @@ object MainForm: TMainForm
         BorderStyle = bsNone
         Columns = <        
           item
-            Width = 37
+            Width = 68
           end        
           item
             Alignment = taCenter
             Caption = 'Raw'
-            Width = 70
+            Width = 52
           end        
           item
             Alignment = taCenter
             Caption = 'Verified'
-            Width = 60
+            Width = 48
           end>
         ColumnClick = False
         Font.Color = clWindowText
@@ -382,9 +382,9 @@ object MainForm: TMainForm
       ParentFont = False
     end
     object Label13: TLabel
-      Left = 94
+      Left = 95
       Height = 39
-      Top = 56
+      Top = 57
       Width = 313
       Caption = 'Morse Runner 1.xx'
       Font.Color = clGreen

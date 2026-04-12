@@ -762,10 +762,9 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  // Ensure the app is the active application regardless of how it was launched
-  // (Finder, Spotlight, or Terminal). activateIgnoringOtherApps is needed on
-  // macOS so the Cocoa window becomes key and text fields accept input.
-  Application.BringToFront;
+  // On macOS, when launched from Terminal the terminal retains keyboard focus.
+  // Activate the application and give focus to the input field.
+  Application.Activate;
   SetForegroundWindow(Handle);
   Edit4.SetFocus;
 end;

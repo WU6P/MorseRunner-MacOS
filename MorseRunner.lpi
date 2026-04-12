@@ -2,10 +2,8 @@
 <CONFIG>
   <ProjectOptions>
     <Version Value="12"/>
-    <PathDelim Value="/"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
-      <MainUnit Value="0"/>
       <Title Value="Morse Runner"/>
       <Scaled Value="True"/>
       <ResourceType Value="res"/>
@@ -251,7 +249,7 @@
   <Compiler>
     <Version Value="21"/>
     <Target>
-      <Filename Value="MR_mac"/>
+      <Filename Value="MorseRunner"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>

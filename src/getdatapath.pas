@@ -29,15 +29,17 @@ end;
 
 function GetUserPath: string;
 var
-  ExeDir, AppBundle: string;
+  AppSupportDir: string;
 begin
-  ExeDir := ExtractFilePath(ParamStr(0));
-  // If inside .app bundle, place user files next to the .app folder
-  AppBundle := ExpandFileName(ExeDir + '../../..');
-  if ExtractFileExt(AppBundle) = '.app' then
-    Result := ExtractFilePath(AppBundle)
-  else
-    Result := ExeDir;
+  // macOS standard: store user files in ~/Library/Application Support/MorseRunner/
+  // This avoids the "access Documents folder" permission prompt
+  AppSupportDir := GetEnvironmentVariable('HOME') + '/Library/Application Support/MorseRunner/';
+
+  // Create directory if it doesn't exist
+  if not DirectoryExists(AppSupportDir) then
+    ForceDirectories(AppSupportDir);
+
+  Result := AppSupportDir;
 end;
 
 end.
