@@ -136,6 +136,20 @@ EOF
 chmod +x "$PROJ_ROOT/MorseRunner"
 echo "Launcher written: $PROJ_ROOT/MorseRunner"
 
+# ── Write .desktop file so the file manager shows the correct icon ───────────
+cat > "$PROJ_ROOT/MorseRunner.desktop" << EOF
+[Desktop Entry]
+Type=Application
+Name=Morse Runner
+Comment=CW contesting simulator
+Exec=$PROJ_ROOT/MorseRunner
+Icon=$PROJ_ROOT/MorseRunner.png
+Terminal=false
+Categories=HamRadio;Education;
+EOF
+chmod +x "$PROJ_ROOT/MorseRunner.desktop"
+echo "Desktop file written: $PROJ_ROOT/MorseRunner.desktop"
+
 # ── Copy data files next to binary (if not already there) ───────────────────
 for f in MASTER.DTA DXCC.LIST CWOPS.LIST NAQPCW.txt CQWWCW.txt \
          ARRLDXCW_USDX.txt FDGOTA.txt K1USNSST.txt IARU_HF.txt \
