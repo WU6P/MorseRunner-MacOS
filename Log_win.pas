@@ -811,7 +811,6 @@ begin
 
   //delete trailing letters, retain at least 2 chars
   for p:= Length(Result) downto 3 do
-//    if Result[p] in DIGITS then
     if CharInSet(Result[p], DIGITS) then
       Break
     else
@@ -1236,34 +1235,6 @@ begin
     Corrections.Free;
   end;
 end;
-
-{
-procedure PaintHisto;
-var
-  Histo: array[0..47] of integer;
-  i: integer;
-  x, y, w: integer;
-begin
-  FillChar(Histo, SizeOf(Histo), 1);
-
-  for i:=0 to High(QsoList) do begin
-    x := Trunc(QsoList[i].T * 1440) div 5;  // How Many QSO in 5mins
-    Inc(Histo[x]);
-  end;
-
-  with MainForm.PaintBox1, MainForm.PaintBox1.Canvas do begin
-    w:= Trunc(ClientWidth / 48);
-    Brush.Color := Color;
-    FillRect(RECT(0,0, Width, Height));
-    for i:=0 to High(Histo) do begin
-      Brush.Color := clGreen;
-      x := i * w;
-      y := Height - 3 - Histo[i] * 2;
-      FillRect(Rect(x, y, x+w-1, Height-2));
-    end;
-  end;
-end;
-}
 
 procedure ShowRate;
 var

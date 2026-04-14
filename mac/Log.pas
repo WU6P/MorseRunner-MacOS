@@ -1129,14 +1129,16 @@ begin
 {$ifdef DEBUG}
   if RunUnitTest then begin
     RunUnitTest := false;
+    // original algorithm
     assert(ExtractPrefix0('W7SST') = 'W7');
-    assert(ExtractPrefix0('W7SST/6') = 'W7');
-    assert(ExtractPrefix0('N7SST/6') = 'N7');
+    assert(ExtractPrefix0('W7SST/6') = 'W7');  // should be 'W6'
+    assert(ExtractPrefix0('N7SST/6') = 'N7');  // should be 'N6'
     assert(ExtractPrefix0('F6/W7SST') = 'F6');
     assert(ExtractPrefix0('F6/AB7Q') = 'F6');
-    assert(ExtractPrefix0('W7SST/W') = 'W7');
-    assert(ExtractPrefix0('F6FVY/W7') = 'F6');
+    assert(ExtractPrefix0('W7SST/W') = 'W7');  // should be 'W0'
+    assert(ExtractPrefix0('F6FVY/W7') = 'F6'); // should be 'W7'
 
+    // newer algorithm
     assert(ExtractPrefix('W7SST') = 'W7');
     assert(ExtractPrefix('W7SST/6') = 'W6');
     assert(ExtractPrefix('N7SST/6') = 'N6');
