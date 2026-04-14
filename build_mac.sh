@@ -10,10 +10,52 @@ LD_NEW=/Library/Developer/CommandLineTools/usr/bin/ld
 LD_OLD=/Library/Developer/CommandLineTools/usr/bin/ld-classic
 PPASLINK=lib/aarch64-darwin/ppaslink.sh
 
+BINARY=lib/aarch64-darwin/MorseRunner
+
 if [ ! -x "$LD_OLD" ]; then
   echo "ERROR: $LD_OLD not found — cannot build without ld-classic"
   exit 1
 fi
+
+build_app_bundle() {
+  echo "=== Building MorseRunner.app bundle ==="
+  APP=MorseRunner.app
+  MACOS="$APP/Contents/MacOS"
+  RES="$APP/Contents/Resources"
+  mkdir -p "$MACOS" "$RES"
+  cp "$BINARY" "$MACOS/MorseRunner"
+  codesign --force --deep -s - "$MACOS/MorseRunner" 2>/dev/null || true
+  for f in *.LIST *.DTA; do
+    [ -f "$f" ] && cp "$f" "$RES/"
+  done
+  for f in *.txt; do
+    [ -f "$f" ] && [ "$f" != "*.txt" ] && cp "$f" "$RES/"
+  done
+  cat > "$APP/Contents/Info.plist" << 'PLIST'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>MorseRunner</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.morserunner.MorseRunner</string>
+  <key>CFBundleName</key>
+  <string>Morse Runner</string>
+  <key>CFBundleVersion</key>
+  <string>1.85.3</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+  <key>LSMinimumSystemVersion</key>
+  <string>11.0</string>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
+PLIST
+  codesign --force --deep -s - "$APP" 2>/dev/null || true
+  echo "=== MorseRunner.app bundle ready ==="
+}
 
 # Ensure AudioBackend2.o is present and up-to-date
 if [ ! -f mac/VCL/AudioBackend2.o ] || [ mac/VCL/AudioBackend2.m -nt mac/VCL/AudioBackend2.o ]; then
@@ -41,9 +83,10 @@ LAZLOG=$(mktemp)
   > "$LAZLOG" 2>&1 || true   # ignore error; we'll check if ppaslink.sh needs patching
 
 # If lazbuild succeeded (produced binary directly), great.
-if [ -x lib/aarch64-darwin/MorseRunner ] && [ lib/aarch64-darwin/MorseRunner -nt "$PPASLINK" ]; then
+if [ -x "$BINARY" ] && [ "$BINARY" -nt "$PPASLINK" ]; then
   echo "=== Build successful (no ld patch needed) ==="
   rm -f "$LAZLOG"
+  build_app_bundle
   exit 0
 fi
 
@@ -65,56 +108,8 @@ fi
 echo "=== Linking with ld-classic ==="
 bash "$PPASLINK"
 
-BINARY=lib/aarch64-darwin/MorseRunner
-if [ -x "$BINARY" ]; then
-  echo "=== Build successful: $BINARY ==="
-  file "$BINARY"
-  otool -l "$BINARY" | grep -A3 "minos\|platform" | head -12
-else
+if [ ! -x "$BINARY" ]; then
   echo "ERROR: MorseRunner not produced"
   exit 1
 fi
-
-# Build .app bundle so macOS activates it properly (keyboard focus)
-echo "=== Building MorseRunner.app bundle ==="
-APP=MorseRunner.app
-MACOS="$APP/Contents/MacOS"
-RES="$APP/Contents/Resources"
-mkdir -p "$MACOS" "$RES"
-
-cp "$BINARY" "$MACOS/MorseRunner"
-codesign --force --deep -s - "$MACOS/MorseRunner" 2>/dev/null || true
-
-# Copy data files into Resources
-for f in *.LIST *.DTA; do
-  [ -f "$f" ] && cp "$f" "$RES/"
-done
-for f in *.txt; do
-  [ -f "$f" ] && [ "$f" != "*.txt" ] && cp "$f" "$RES/"
-done
-
-cat > "$APP/Contents/Info.plist" << 'PLIST'
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>CFBundleExecutable</key>
-  <string>MorseRunner</string>
-  <key>CFBundleIdentifier</key>
-  <string>com.morserunner.MorseRunner</string>
-  <key>CFBundleName</key>
-  <string>Morse Runner</string>
-  <key>CFBundleVersion</key>
-  <string>1.85.3</string>
-  <key>CFBundlePackageType</key>
-  <string>APPL</string>
-  <key>LSMinimumSystemVersion</key>
-  <string>11.0</string>
-  <key>NSHighResolutionCapable</key>
-  <true/>
-</dict>
-</plist>
-PLIST
-
-codesign --force --deep -s - "$APP" 2>/dev/null || true
-echo "=== MorseRunner.app bundle ready ==="
+build_app_bundle
