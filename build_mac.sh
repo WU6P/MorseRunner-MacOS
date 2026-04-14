@@ -8,6 +8,7 @@ cd "$(dirname "$0")"
 
 LD_NEW=/Library/Developer/CommandLineTools/usr/bin/ld
 LD_OLD=/Library/Developer/CommandLineTools/usr/bin/ld-classic
+PPASLINK=lib/aarch64-darwin/ppaslink.sh
 
 if [ ! -x "$LD_OLD" ]; then
   echo "ERROR: $LD_OLD not found — cannot build without ld-classic"
@@ -38,29 +39,31 @@ echo "=== Compiling ==="
   2>&1 || true   # ignore error; we'll check if ppaslink.sh needs patching
 
 # If lazbuild succeeded (produced binary directly), great.
-if [ -x MorseRunner ] && [ MorseRunner -nt ppaslink.sh ]; then
+if [ -x lib/aarch64-darwin/MorseRunner ] && [ lib/aarch64-darwin/MorseRunner -nt "$PPASLINK" ]; then
   echo "=== Build successful (no ld patch needed) ==="
   exit 0
 fi
 
 # Patch ppaslink.sh to use ld-classic
-if [ ! -f ppaslink.sh ]; then
-  echo "ERROR: ppaslink.sh not found — compile step failed completely"
+# Note: Lazarus 3.7+ writes ppaslink.sh into the unit output dir, not project root
+if [ ! -f "$PPASLINK" ]; then
+  echo "ERROR: $PPASLINK not found — compile step failed completely"
   exit 1
 fi
 
-if grep -q "$LD_NEW " ppaslink.sh && ! grep -q "ld-classic" ppaslink.sh; then
+if grep -q "$LD_NEW " "$PPASLINK" && ! grep -q "ld-classic" "$PPASLINK"; then
   echo "=== Patching ppaslink.sh: ld → ld-classic ==="
-  sed -i '' "s|${LD_NEW} |${LD_OLD} |g" ppaslink.sh
+  sed -i '' "s|${LD_NEW} |${LD_OLD} |g" "$PPASLINK"
 fi
 
 echo "=== Linking with ld-classic ==="
-bash ppaslink.sh
+bash "$PPASLINK"
 
-if [ -x MorseRunner ]; then
-  echo "=== Build successful: MorseRunner ==="
-  file MorseRunner
-  otool -l MorseRunner | grep -A3 "minos\|platform" | head -12
+BINARY=lib/aarch64-darwin/MorseRunner
+if [ -x "$BINARY" ]; then
+  echo "=== Build successful: $BINARY ==="
+  file "$BINARY"
+  otool -l "$BINARY" | grep -A3 "minos\|platform" | head -12
 else
   echo "ERROR: MorseRunner not produced"
   exit 1
@@ -73,10 +76,7 @@ MACOS="$APP/Contents/MacOS"
 RES="$APP/Contents/Resources"
 mkdir -p "$MACOS" "$RES"
 
-# Copy binary only if not already there (lazbuild may put it directly in MacOS/)
-if [ "$(realpath MorseRunner 2>/dev/null)" != "$(realpath "$MACOS/MorseRunner" 2>/dev/null)" ]; then
-  cp MorseRunner "$MACOS/MorseRunner"
-fi
+cp "$BINARY" "$MACOS/MorseRunner"
 codesign --force --deep -s - "$MACOS/MorseRunner" 2>/dev/null || true
 
 # Copy data files into Resources
