@@ -25,6 +25,7 @@ build_app_bundle() {
   mkdir -p "$MACOS" "$RES"
   cp "$BINARY" "$MACOS/MorseRunner"
   codesign --force --deep -s - "$MACOS/MorseRunner" 2>/dev/null || true
+  [ -f MorseRunner.icns ] && cp MorseRunner.icns "$RES/"
   for f in *.LIST *.DTA; do
     [ -f "$f" ] && cp "$f" "$RES/"
   done
@@ -48,6 +49,8 @@ build_app_bundle() {
   <string>APPL</string>
   <key>LSMinimumSystemVersion</key>
   <string>11.0</string>
+  <key>CFBundleIconFile</key>
+  <string>MorseRunner</string>
   <key>NSHighResolutionCapable</key>
   <true/>
 </dict>
