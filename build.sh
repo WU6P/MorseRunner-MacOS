@@ -141,7 +141,8 @@ if [ $LAZBUILD_EXIT -ne 0 ] && [ -f "$PPASLINK" ]; then
       # Copy data files into Resources
       for f in MASTER.DTA DXCC.LIST CWOPS.LIST NAQPCW.txt CQWWCW.txt \
                ARRLDXCW_USDX.txt FDGOTA.txt K1USNSST.txt IARU_HF.txt \
-               HstResults.txt SSCW.txt Readme.txt; do
+               HstResults.txt SSCW.txt Readme.txt \
+               JARL_ACAG.TXT JARL_ALLJA.TXT; do
         [ -f "$PROJ_ROOT/$f" ] && cp "$PROJ_ROOT/$f" "$BIN/Contents/Resources/$f"
       done
       echo "App bundle assembled: $BIN"

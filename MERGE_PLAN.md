@@ -19,10 +19,10 @@ MR_merge/
   MorseRunner.lpi          ← Lazarus project (search path: mac > root)
   build.sh                 ← macOS build script (lazbuild + clang)
 
-  Main.pas                 ← Windows version (original MR)
+  Main_win.pas             ← Windows version (original MR, _win suffix)
   Main.dfm                 ← Delphi form
-  Log.pas                  ← Windows version
-  Ini.pas                  ← Windows version
+  Log_win.pas              ← Windows version (_win suffix)
+  Ini_win.pas              ← Windows version (_win suffix)
   ScoreDlg.pas             ← Shared (has {$ifdef FPC} blocks)
   ScoreDlg.dfm             ← Delphi form
   Contest.pas              ← Shared (has {$ifdef FPC} blocks)
@@ -30,11 +30,11 @@ MR_merge/
   ... (38 other shared .pas files with {$ifdef FPC} conditionals)
 
   VCL/
-    SndOut.pas             ← Windows version (MMSystem waveOut)
-    SndCustm.pas           ← Windows version
-    WavFile.pas            ← Windows version
-    VolmSldr.pas           ← Windows version
-    PermHint.pas           ← Windows version
+    SndOut_win.pas         ← Windows version (MMSystem waveOut, _win suffix)
+    SndCustm_win.pas       ← Windows version (_win suffix)
+    WavFile_win.pas        ← Windows version (_win suffix)
+    VolmSldr_win.pas       ← Windows version (_win suffix)
+    PermHint_win.pas       ← Windows version (_win suffix)
     BaseComp.pas           ← Shared (has {$ifdef} blocks)
     ... (9 other shared VCL units)
 
@@ -56,7 +56,7 @@ MR_merge/
       PermHint.pas         ← macOS version (LCL hints)
       AudioBackend2.m      ← Obj-C CoreAudio backend
 
-  PerlRegEx/               ← Windows PCRE (unchanged, Delphi only)
+  PerlRegEx/               ← Windows PCRE (PerlRegEx_win.pas, Delphi only)
   Util/                    ← Shared utilities (with {$ifdef FPC})
   Test/                    ← Delphi test project (unchanged)
   tools/                   ← Build tools (unchanged)
@@ -73,8 +73,10 @@ copies** rather than merged with `{$ifdef}`. Rationale:
 - Log.pas: TRichEdit vs TMemo with no shared formatting code
 - Ini.pas: TRegistry vs TIniFile with different read/write patterns
 
-FPC resolves `mac/` first via search path order, so `uses SndOut` picks up
-`mac/VCL/SndOut.pas` on macOS and `VCL/SndOut.pas` on Windows.
+Windows files use a `_win` suffix (e.g. `Main_win.pas`) while the internal
+`unit` declaration keeps the original name (e.g. `unit Main;`). The Delphi
+`.dpr` uses `in` clauses to map unit names to `_win` file paths. FPC/Lazarus
+resolves `mac/` first via search path order, finding `mac/Main.pas` etc.
 
 ---
 
@@ -98,15 +100,15 @@ ArrlFd, SSExchParser, Lexer, Station, BaseComp, Contest
 
 | Unit | Windows (root) | macOS (mac/) | Status |
 |------|---------------|-------------|--------|
-| Main | Main.pas + Main.dfm | mac/Main.pas + mac/Main.lfm | DONE |
-| Log | Log.pas | mac/Log.pas | DONE |
-| Ini | Ini.pas | mac/Ini.pas | DONE |
-| PerlRegEx | PerlRegEx/PerlRegEx.pas | mac/PerlRegEx.pas | DONE |
-| SndOut | VCL/SndOut.pas | mac/VCL/SndOut.pas | DONE |
-| SndCustm | VCL/SndCustm.pas | mac/VCL/SndCustm.pas | DONE |
-| WavFile | VCL/WavFile.pas | mac/VCL/WavFile.pas | DONE |
-| VolmSldr | VCL/VolmSldr.pas | mac/VCL/VolmSldr.pas | DONE |
-| PermHint | VCL/PermHint.pas | mac/VCL/PermHint.pas | DONE |
+| Main | Main_win.pas + Main.dfm | mac/Main.pas + mac/Main.lfm | DONE |
+| Log | Log_win.pas | mac/Log.pas | DONE |
+| Ini | Ini_win.pas | mac/Ini.pas | DONE |
+| PerlRegEx | PerlRegEx/PerlRegEx_win.pas | mac/PerlRegEx.pas | DONE |
+| SndOut | VCL/SndOut_win.pas | mac/VCL/SndOut.pas | DONE |
+| SndCustm | VCL/SndCustm_win.pas | mac/VCL/SndCustm.pas | DONE |
+| WavFile | VCL/WavFile_win.pas | mac/VCL/WavFile.pas | DONE |
+| VolmSldr | VCL/VolmSldr_win.pas | mac/VCL/VolmSldr.pas | DONE |
+| PermHint | VCL/PermHint_win.pas | mac/VCL/PermHint.pas | DONE |
 
 ### macOS-only new files (in mac/)
 

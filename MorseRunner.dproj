@@ -117,13 +117,13 @@
         <DelphiCompile Include="$(MainSource)">
             <MainSource>MainSource</MainSource>
         </DelphiCompile>
-        <DCCReference Include="Main.pas">
+        <DCCReference Include="Main_win.pas">
             <Form>MainForm</Form>
         </DCCReference>
         <DCCReference Include="Contest.pas"/>
         <DCCReference Include="DualExchContest.pas"/>
         <DCCReference Include="RndFunc.pas"/>
-        <DCCReference Include="Ini.pas"/>
+        <DCCReference Include="Ini_win.pas"/>
         <DCCReference Include="Station.pas"/>
         <DCCReference Include="VCL\MorseKey.pas"/>
         <DCCReference Include="VCL\FarnsKeyer.pas"/>
@@ -132,7 +132,7 @@
         <DCCReference Include="MyStn.pas"/>
         <DCCReference Include="CallLst.pas"/>
         <DCCReference Include="QrmStn.pas"/>
-        <DCCReference Include="Log.pas"/>
+        <DCCReference Include="Log_win.pas"/>
         <DCCReference Include="Qsb.pas"/>
         <DCCReference Include="DxOper.pas"/>
         <DCCReference Include="QrnStn.pas"/>
@@ -140,20 +140,20 @@
             <Form>ScoreDialog</Form>
         </DCCReference>
         <DCCReference Include="VCL\BaseComp.pas"/>
-        <DCCReference Include="VCL\PermHint.pas"/>
+        <DCCReference Include="VCL\PermHint_win.pas"/>
         <DCCReference Include="VCL\Crc32.pas"/>
-        <DCCReference Include="VCL\SndCustm.pas"/>
+        <DCCReference Include="VCL\SndCustm_win.pas"/>
         <DCCReference Include="VCL\SndTypes.pas"/>
-        <DCCReference Include="VCL\SndOut.pas"/>
+        <DCCReference Include="VCL\SndOut_win.pas"/>
         <DCCReference Include="VCL\MorseTbl.pas"/>
         <DCCReference Include="VCL\QuickAvg.pas"/>
         <DCCReference Include="VCL\MovAvg.pas"/>
         <DCCReference Include="VCL\Mixers.pas"/>
         <DCCReference Include="VCL\VolumCtl.pas"/>
-        <DCCReference Include="VCL\VolmSldr.pas"/>
-        <DCCReference Include="VCL\WavFile.pas"/>
+        <DCCReference Include="VCL\VolmSldr_win.pas"/>
+        <DCCReference Include="VCL\WavFile_win.pas"/>
         <DCCReference Include="PerlRegEx\pcre.pas"/>
-        <DCCReference Include="PerlRegEx\PerlRegEx.pas"/>
+        <DCCReference Include="PerlRegEx\PerlRegEx_win.pas"/>
         <DCCReference Include="DXCC.pas"/>
         <DCCReference Include="ArrlFd.pas"/>
         <DCCReference Include="ArrlSS.pas"/>

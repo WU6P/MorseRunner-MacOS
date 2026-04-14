@@ -15,7 +15,7 @@ if [ ! -x "$LD_OLD" ]; then
 fi
 
 # Ensure AudioBackend2.o is present and up-to-date
-if [ ! -f AudioBackend2.o ] || [ src/VCL/AudioBackend2.m -nt AudioBackend2.o ]; then
+if [ ! -f mac/VCL/AudioBackend2.o ] || [ mac/VCL/AudioBackend2.m -nt mac/VCL/AudioBackend2.o ]; then
   echo "=== Rebuilding AudioBackend2.o ==="
   /Library/Developer/CommandLineTools/usr/bin/clang -c \
     -fPIC \
@@ -23,8 +23,8 @@ if [ ! -f AudioBackend2.o ] || [ src/VCL/AudioBackend2.m -nt AudioBackend2.o ]; 
     -mmacosx-version-min=11.0 \
     -fno-objc-arc \
     -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk \
-    -o AudioBackend2.o \
-    src/VCL/AudioBackend2.m
+    -o mac/VCL/AudioBackend2.o \
+    mac/VCL/AudioBackend2.m
 fi
 
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
