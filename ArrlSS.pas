@@ -97,7 +97,7 @@ begin
   rec := nil;
 
   try
-    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'SSCW.TXT');
+    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'SSCW.txt');
 
     for i:= 0 to slst.Count-1 do begin
       tl.DelimitedText := slst.Strings[i];

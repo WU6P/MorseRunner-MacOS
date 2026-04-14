@@ -227,7 +227,7 @@ begin
   try
     FdCallList.Clear;
 
-    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'FDGOTA.TXT');
+    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'FDGOTA.txt');
 
     // Pass 1 - find and process all club stations (class A, C or F).
     //        - deffer all home/portable stations w/ a club name to Pass 2.

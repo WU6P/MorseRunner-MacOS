@@ -93,7 +93,7 @@ begin
   try
     NaQpCallList.Clear;
 
-    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'NAQPCW.TXT');
+    slst.LoadFromFile({$ifdef FPC}GetDataPath.GetDataPath{$else}ParamStr(1){$endif} + 'NAQPCW.txt');
 
     for i:= 0 to slst.Count-1 do begin
       if (slst.Strings[i].StartsWith('!!Order!!')) then continue;
