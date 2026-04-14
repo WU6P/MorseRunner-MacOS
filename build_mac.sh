@@ -30,26 +30,32 @@ fi
 
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
 # new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
+# Output is captured; only shown on a real compile failure (missing ppaslink.sh).
 echo "=== Compiling ==="
+LAZLOG=$(mktemp)
 /Applications/Lazarus/lazbuild MorseRunner.lpi \
   --ws=cocoa \
   --compiler=/usr/local/bin/fpc \
   --cpu=aarch64 \
   --os=darwin \
-  2>&1 || true   # ignore error; we'll check if ppaslink.sh needs patching
+  > "$LAZLOG" 2>&1 || true   # ignore error; we'll check if ppaslink.sh needs patching
 
 # If lazbuild succeeded (produced binary directly), great.
 if [ -x lib/aarch64-darwin/MorseRunner ] && [ lib/aarch64-darwin/MorseRunner -nt "$PPASLINK" ]; then
   echo "=== Build successful (no ld patch needed) ==="
+  rm -f "$LAZLOG"
   exit 0
 fi
 
 # Patch ppaslink.sh to use ld-classic
 # Note: Lazarus 3.7+ writes ppaslink.sh into the unit output dir, not project root
 if [ ! -f "$PPASLINK" ]; then
-  echo "ERROR: $PPASLINK not found — compile step failed completely"
+  echo "ERROR: compile step failed — lazbuild output:"
+  cat "$LAZLOG"
+  rm -f "$LAZLOG"
   exit 1
 fi
+rm -f "$LAZLOG"
 
 if grep -q "$LD_NEW " "$PPASLINK" && ! grep -q "ld-classic" "$PPASLINK"; then
   echo "=== Patching ppaslink.sh: ld → ld-classic ==="
