@@ -826,6 +826,8 @@ begin
               else
                 Log.UpdateStats({AVerifyResults=}True);
 
+              Break; // only one DX station can match per QSO; prevent double-counting
+
 {
               This code can be used to clear QSO info after 'TU' is sent.
               However, this may be a multi-threading issue here because

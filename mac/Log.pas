@@ -777,6 +777,7 @@ begin
   Globals.GScoreListView.Items[1].SubItems[1] := '';
   Globals.GScoreListView.Items[2].SubItems[1] := FormatScore(Score);
 
+  Globals.GScoreListView.Invalidate;  // LCL: force visual repaint of score table
   Globals.GPaintBox1.Invalidate;
 
   Globals.GPanel11.Caption := IntToStr(Score);
@@ -784,35 +785,44 @@ end;
 
 
 { UpdateStats }
+{ macOS/Linux: recalculate scores from scratch each time.
+  The Windows version uses cumulative accumulators (Inc(RawPoints,...)) which
+  depend on UpdateStats being called exactly once per QSO in the right order.
+  On macOS/Linux, GetAudio runs from a TTimer on the same main thread as
+  keyboard events (no TThread.Synchronize), so call ordering is unpredictable.
+  Recalculating from QsoList eliminates all timing-dependent score bugs. }
 
 procedure UpdateStats(AVerifyResults: boolean);
 var
-  Mul: integer;
+  i, Mul: integer;
 begin
-  if not AVerifyResults then
-    with QsoList[High(QsoList)] do
-    begin
-      Inc(RawPoints, Points);
-      RawMultList.ApplyMults(MultStr);
-    end;
-  Mul := RawMultList.Count;
+  RawPoints := 0;
+  VerifiedPoints := 0;
+  RawMultList.Clear;
+  VerifiedMultList.Clear;
 
+  for i := 0 to High(QsoList) do
+  begin
+    Inc(RawPoints, QsoList[i].Points);
+    RawMultList.ApplyMults(QsoList[i].MultStr);
+
+    if QsoList[i].Err = '   ' then begin
+      Inc(VerifiedPoints, QsoList[i].Points);
+      VerifiedMultList.ApplyMults(QsoList[i].MultStr);
+    end;
+  end;
+
+  Mul := RawMultList.Count;
   Globals.GScoreListView.Items[0].SubItems[0] := FormatScore(RawPoints);
   Globals.GScoreListView.Items[1].SubItems[0] := FormatScore(Mul);
   Globals.GScoreListView.Items[2].SubItems[0] := FormatScore(RawPoints * Mul);
 
-  if AVerifyResults then
-    with QsoList[High(QsoList)] do
-      if Err = '   ' then begin
-        Inc(VerifiedPoints, Points);
-        VerifiedMultList.ApplyMults(MultStr);
-      end;
   Mul := VerifiedMultList.Count;
-
   Globals.GScoreListView.Items[0].SubItems[1] := FormatScore(VerifiedPoints);
   Globals.GScoreListView.Items[1].SubItems[1] := FormatScore(Mul);
   Globals.GScoreListView.Items[2].SubItems[1] := FormatScore(VerifiedPoints * Mul);
 
+  Globals.GScoreListView.Invalidate;
   Globals.GPaintBox1.Invalidate;
 end;
 

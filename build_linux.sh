@@ -57,8 +57,8 @@ if [ "$1" = "clean" ]; then
   echo "Cleaning..."
   rm -rf "$PROJ_ROOT/lib"
   rm -f "$SRC_VCL/AudioBackendPulse.o"
-  rm -f "$PROJ_ROOT/MorseRunner.bin"
   rm -f "$PROJ_ROOT/MorseRunner"
+  rm -f "$PROJ_ROOT/MorseRunner.desktop"
   echo "Done."
   exit 0
 fi
@@ -111,44 +111,69 @@ if [ $LAZBUILD_EXIT -ne 0 ]; then
   exit $LAZBUILD_EXIT
 fi
 
-# ── Copy binary to project root as MorseRunner.bin ──────────────────────────
+# ── Copy binary to project root as MorseRunner ───────────────────────────────
+# No wrapper script needed: GDK_NATIVE_WINDOWS=1 is set in the .desktop Exec
+# so it applies when launched from a file manager. The harmless GTK message
+# "Failed to load module canberra-gtk-module" is benign and acceptable in a
+# terminal; install libcanberra-gtk-module to silence it if preferred.
 BINARY="$OUT_DIR/MorseRunner"
 if [ -f "$BINARY" ]; then
-  cp "$BINARY" "$PROJ_ROOT/MorseRunner.bin"
-  chmod +x "$PROJ_ROOT/MorseRunner.bin"
+  cp "$BINARY" "$PROJ_ROOT/MorseRunner"
+  chmod +x "$PROJ_ROOT/MorseRunner"
   echo ""
-  echo "Build succeeded: $PROJ_ROOT/MorseRunner.bin"
+  echo "Build succeeded: $PROJ_ROOT/MorseRunner"
 else
   echo ""
   echo "Build succeeded (binary location: check lib/ directory)"
 fi
 
-# ── Write launcher as ./MorseRunner ──────────────────────────────────────────
-# GTK2 on modern Ubuntu with a compositor gives harmless depth-mismatch
-# warnings on stderr. GDK_NATIVE_WINDOWS=1 forces GTK2 to use plain X11
-# windows for all widgets, avoiding the mismatch. Stderr is also redirected
-# to /dev/null so the terminal stays clean.
-cat > "$PROJ_ROOT/MorseRunner" << 'EOF'
-#!/bin/bash
-DIR="$(cd "$(dirname "$0")" && pwd)"
-GDK_NATIVE_WINDOWS=1 "$DIR/MorseRunner.bin" "$@" 2>/dev/null
-EOF
-chmod +x "$PROJ_ROOT/MorseRunner"
-echo "Launcher written: $PROJ_ROOT/MorseRunner"
+# ── Write .desktop file and install it so file managers show the icon ─────────
+# The .desktop file must live in ~/.local/share/applications/ (not the project
+# dir) for GNOME/KDE/XFCE file managers to associate the custom icon.
+DESKTOP_DIR="$HOME/.local/share/applications"
+ICON_DIR="$HOME/.local/share/icons/hicolor/128x128/apps"
+mkdir -p "$DESKTOP_DIR" "$ICON_DIR"
 
-# ── Write .desktop file so the file manager shows the correct icon ───────────
+# Install icon
+cp "$PROJ_ROOT/MorseRunner.png" "$ICON_DIR/MorseRunner.png"
+
+# Write and install .desktop file
+# GDK_NATIVE_WINDOWS=1 prevents GTK2 depth-mismatch visual glitches with
+# modern compositors; env(1) is the portable way to set it in an Exec= line.
+cat > "$DESKTOP_DIR/MorseRunner.desktop" << EOF
+[Desktop Entry]
+Type=Application
+Name=Morse Runner
+Comment=CW contesting simulator
+Exec=env GDK_NATIVE_WINDOWS=1 $PROJ_ROOT/MorseRunner %U
+Icon=MorseRunner
+Terminal=false
+Categories=HamRadio;Education;
+EOF
+chmod +x "$DESKTOP_DIR/MorseRunner.desktop"
+
+# Also write one next to the binary for easy "Allow Launching" in Nautilus
 cat > "$PROJ_ROOT/MorseRunner.desktop" << EOF
 [Desktop Entry]
 Type=Application
 Name=Morse Runner
 Comment=CW contesting simulator
-Exec=$PROJ_ROOT/MorseRunner
-Icon=$PROJ_ROOT/MorseRunner.png
+Exec=env GDK_NATIVE_WINDOWS=1 $PROJ_ROOT/MorseRunner %U
+Icon=MorseRunner
 Terminal=false
 Categories=HamRadio;Education;
 EOF
 chmod +x "$PROJ_ROOT/MorseRunner.desktop"
-echo "Desktop file written: $PROJ_ROOT/MorseRunner.desktop"
+
+# Notify the desktop environment of the new .desktop entry
+if command -v update-desktop-database >/dev/null 2>&1; then
+  update-desktop-database "$DESKTOP_DIR" 2>/dev/null || true
+fi
+if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+  gtk-update-icon-cache -f "$HOME/.local/share/icons/hicolor" 2>/dev/null || true
+fi
+echo "Desktop entry installed: $DESKTOP_DIR/MorseRunner.desktop"
+echo "Icon installed:          $ICON_DIR/MorseRunner.png"
 
 # ── Copy data files next to binary (if not already there) ───────────────────
 for f in MASTER.DTA DXCC.LIST CWOPS.LIST NAQPCW.txt CQWWCW.txt \
@@ -164,5 +189,5 @@ done
 # ── Optionally launch ───────────────────────────────────────────────────────
 if [ "$1" = "run" ]; then
   echo "Launching MorseRunner..."
-  "$PROJ_ROOT/MorseRunner"   # runs the launcher (which calls MorseRunner.bin)
+  GDK_NATIVE_WINDOWS=1 "$PROJ_ROOT/MorseRunner"
 fi
