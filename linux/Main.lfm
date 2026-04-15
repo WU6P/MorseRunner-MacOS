@@ -1,0 +1,1499 @@
+object MainForm: TMainForm
+  Left = 70
+  Height = 544
+  Top = 156
+  Width = 764
+  BorderIcons = [biSystemMenu, biMinimize]
+  BorderStyle = bsSingle
+  Caption = 'Morse Runner'
+  ClientHeight = 544
+  ClientWidth = 764
+  Color = clBtnFace
+  Font.Color = clWindowText
+  Font.Height = -12
+  Font.Name = 'Sans'
+  KeyPreview = True
+  Menu = MainMenu1
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnKeyDown = FormKeyDown
+  OnKeyPress = FormKeyPress
+  OnKeyUp = FormKeyUp
+  OnMouseWheelDown = FormMouseWheelDown
+  OnMouseWheelUp = FormMouseWheelUp
+  OnShow = FormShow
+  Position = poScreenCenter
+  LCLVersion = '3.7.0.0'
+  object Bevel1: TBevel
+    Left = 0
+    Height = 2
+    Top = 0
+    Width = 764
+    Align = alTop
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 135
+    Top = 409
+    Width = 764
+    Align = alBottom
+    BevelOuter = bvLowered
+    ClientHeight = 135
+    ClientWidth = 764
+    ParentBackground = False
+    TabOrder = 0
+    object Label1: TLabel
+      Left = 16
+      Height = 15
+      Top = 12
+      Width = 21
+      Caption = 'Call'
+    end
+    object Label2: TLabel
+      Left = 140
+      Height = 15
+      Top = 12
+      Width = 23
+      Caption = 'RST'
+    end
+    object Label3: TLabel
+      Left = 219
+      Height = 15
+      Top = 12
+      Width = 16
+      Caption = 'Nr.'
+    end
+    object SpeedButton4: TSpeedButton
+      Tag = 1
+      Left = 6
+      Height = 26
+      Top = 66
+      Width = 65
+      Caption = 'F1  CQ'
+      OnClick = SendClick
+    end
+    object SpeedButton5: TSpeedButton
+      Tag = 2
+      Left = 73
+      Height = 26
+      Top = 66
+      Width = 65
+      Caption = 'F2  <exch>'
+      OnClick = SendClick
+    end
+    object SpeedButton6: TSpeedButton
+      Tag = 3
+      Left = 140
+      Height = 26
+      Top = 66
+      Width = 65
+      Caption = 'F3  TU'
+      OnClick = SendClick
+    end
+    object SpeedButton7: TSpeedButton
+      Tag = 4
+      Left = 207
+      Height = 26
+      Top = 66
+      Width = 65
+      Caption = 'F4  <my>'
+      OnClick = SendClick
+    end
+    object SpeedButton8: TSpeedButton
+      Tag = 5
+      Left = 6
+      Height = 26
+      Top = 94
+      Width = 65
+      Caption = 'F5  <his>'
+      OnClick = SendClick
+    end
+    object SpeedButton9: TSpeedButton
+      Tag = 6
+      Left = 73
+      Height = 26
+      Top = 94
+      Width = 65
+      Caption = 'F6  B4'
+      OnClick = SendClick
+    end
+    object SpeedButton10: TSpeedButton
+      Tag = 7
+      Left = 140
+      Height = 26
+      Top = 94
+      Width = 65
+      Caption = 'F7  ?'
+      OnClick = SendClick
+    end
+    object SpeedButton11: TSpeedButton
+      Tag = 8
+      Left = 207
+      Height = 26
+      Top = 94
+      Width = 65
+      Caption = 'F8  NIL'
+      OnClick = SendClick
+    end
+    object Bevel2: TBevel
+      Left = 279
+      Height = 123
+      Top = 6
+      Width = 1
+    end
+    object Edit1: TEdit
+      Left = 12
+      Height = 24
+      Top = 33
+      Width = 118
+      AutoSelect = False
+      CharCase = ecUppercase
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Monospace'
+      Font.Style = [fsBold]
+      MaxLength = 12
+      ParentFont = False
+      TabOrder = 0
+      OnChange = Edit1Change
+      OnEnter = Edit1Enter
+      OnExit = Edit1Exit
+      OnKeyPress = Edit1KeyPress
+    end
+    object Edit2: TEdit
+      Left = 136
+      Height = 24
+      Top = 33
+      Width = 77
+      AutoSelect = False
+      CharCase = ecUppercase
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Monospace'
+      Font.Style = [fsBold]
+      MaxLength = 10
+      ParentFont = False
+      TabOrder = 1
+      OnEnter = Edit2Enter
+      OnExit = Edit2Exit
+      OnKeyPress = Edit2KeyPress
+    end
+    object Edit3: TEdit
+      Left = 219
+      Height = 24
+      Top = 33
+      Width = 45
+      AutoSelect = False
+      CharCase = ecUppercase
+      Font.Color = clWindowText
+      Font.Height = -16
+      Font.Name = 'Monospace'
+      Font.Style = [fsBold]
+      MaxLength = 4
+      ParentFont = False
+      TabOrder = 2
+      OnEnter = Edit3Enter
+      OnExit = Edit3Exit
+      OnKeyPress = Edit3KeyPress
+      OnKeyUp = Edit3KeyUp
+    end
+    object Panel2: TPanel
+      Left = 552
+      Height = 33
+      Top = 0
+      Width = 191
+      BevelOuter = bvLowered
+      Caption = '00:00:00'
+      Color = clBlack
+      Font.Color = 14151712
+      Font.Height = -24
+      Font.Name = 'Sans'
+      ParentBackground = False
+      ParentColor = False
+      ParentFont = False
+      TabOrder = 3
+    end
+    object Panel3: TPanel
+      Left = 292
+      Height = 67
+      Top = 45
+      Width = 225
+      BevelOuter = bvLowered
+      ClientHeight = 67
+      ClientWidth = 225
+      ParentBackground = False
+      TabOrder = 4
+      object PaintBox1: TPaintBox
+        Left = 1
+        Height = 65
+        Top = 1
+        Width = 223
+        Align = alClient
+        OnPaint = PaintBox1Paint
+      end
+    end
+    object Panel4: TPanel
+      Left = 292
+      Height = 33
+      Top = 6
+      Width = 114
+      BevelOuter = bvLowered
+      Font.Color = clRed
+      Font.Height = -11
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 5
+    end
+    object Panel7: TPanel
+      Left = 412
+      Height = 33
+      Top = 6
+      Width = 104
+      BevelOuter = bvLowered
+      ParentBackground = False
+      TabOrder = 6
+    end
+    object Panel8: TPanel
+      Cursor = crHandPoint
+      Left = 292
+      Height = 10
+      Hint = 'RIT -- Use Up/Down keys or Mouse Wheel; Hold Control key for BW.'
+      Top = 119
+      Width = 225
+      BevelOuter = bvLowered
+      ClientHeight = 10
+      ClientWidth = 225
+      ParentBackground = False
+      ParentShowHint = False
+      ShowHint = True
+      TabOrder = 7
+      OnMouseDown = Panel8MouseDown
+      object Shape2: TShape
+        Cursor = crHandPoint
+        Left = 81
+        Height = 7
+        Top = 1
+        Width = 32
+        Brush.Color = 12902431
+        OnMouseDown = Shape2MouseDown
+      end
+    end
+    object Panel11: TPanel
+      Left = 529
+      Height = 85
+      Top = 44
+      Width = 191
+      BevelOuter = bvLowered
+      Caption = '0'
+      ClientHeight = 85
+      ClientWidth = 191
+      Font.Color = clWindowText
+      Font.Height = -19
+      Font.Style = [fsBold]
+      ParentBackground = False
+      ParentFont = False
+      TabOrder = 8
+      object ListView1: TListView
+        Left = 1
+        Height = 83
+        Top = 1
+        Width = 189
+        Align = alClient
+        BorderStyle = bsNone
+        Columns = <        
+          item
+            Width = 68
+          end        
+          item
+            Alignment = taCenter
+            Caption = 'Raw'
+            Width = 52
+          end        
+          item
+            Alignment = taCenter
+            Caption = 'Verified'
+            Width = 48
+          end>
+        ColumnClick = False
+        Font.Color = clWindowText
+        Font.Height = -12
+        Font.Name = 'Monospace'
+        ParentFont = False
+        ReadOnly = True
+        RowSelect = True
+        TabStop = False
+        TabOrder = 0
+        ViewStyle = vsReport
+      end
+    end
+  end
+  object Panel5: TPanel
+    Left = 0
+    Height = 10
+    Top = 399
+    Width = 764
+    Align = alBottom
+    BevelOuter = bvNone
+    ParentBackground = False
+    TabOrder = 1
+  end
+  object Panel6: TPanel
+    Left = 0
+    Height = 397
+    Top = 2
+    Width = 552
+    Align = alClient
+    BevelOuter = bvNone
+    BorderStyle = bsSingle
+    ClientHeight = 395
+    ClientWidth = 550
+    ParentBackground = False
+    TabOrder = 2
+    object Shape1: TShape
+      Left = 0
+      Height = 278
+      Top = 54
+      Width = 550
+      Align = alClient
+      Brush.Color = 16711401
+      Pen.Style = psClear
+    end
+    object Label14: TLabel
+      Left = 100
+      Height = 39
+      Top = 61
+      Width = 313
+      Caption = 'Morse Runner 1.xx'
+      Font.Color = 12369084
+      Font.Height = -35
+      Font.Name = 'Sans'
+      Font.Style = [fsBold, fsItalic]
+      ParentFont = False
+    end
+    object Label12: TLabel
+      Left = 95
+      Height = 39
+      Top = 57
+      Width = 313
+      Caption = 'Morse Runner 1.xx'
+      Font.Color = clAqua
+      Font.Height = -35
+      Font.Name = 'Sans'
+      Font.Style = [fsBold, fsItalic]
+      ParentFont = False
+    end
+    object Label13: TLabel
+      Left = 95
+      Height = 39
+      Top = 56
+      Width = 313
+      Caption = 'Morse Runner 1.xx'
+      Font.Color = clGreen
+      Font.Height = -35
+      Font.Name = 'Sans'
+      Font.Style = [fsBold, fsItalic]
+      ParentFont = False
+    end
+    object Label15: TLabel
+      Left = 112
+      Height = 16
+      Top = 168
+      Width = 310
+      Caption = 'Copyright ©2004-2016 Alex Shovkoplyas, VE3NEA'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Label16: TLabel
+      Left = 221
+      Height = 16
+      Top = 127
+      Width = 68
+      Caption = 'FREEWARE'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Label19: TLabel
+      Left = 28
+      Height = 16
+      Top = 234
+      Width = 429
+      Caption = 'Copyright ©2022-2025 Morse Runner Community Edition Contributors'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Label20: TLabel
+      Left = 178
+      Height = 16
+      Top = 106
+      Width = 163
+      Caption = 'CW CONTEST SIMULATOR'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Label21: TLabel
+      Left = 142
+      Height = 16
+      Top = 191
+      Width = 227
+      Caption = 'http://www.dxatlas.com/MorseRunner'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Label22: TLabel
+      Left = 126
+      Height = 16
+      Top = 255
+      Width = 267
+      Caption = 'https://www.github.com/w7sst/MorseRunner'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+    object Memo1: TMemo
+      Left = 0
+      Height = 41
+      Top = 354
+      Width = 550
+      Align = alBottom
+      BorderStyle = bsNone
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+      ReadOnly = True
+      ScrollBars = ssVertical
+      TabOrder = 1
+      TabStop = False
+      Visible = False
+    end
+    object ListView2: TListView
+      Left = 0
+      Height = 54
+      Top = 0
+      Width = 550
+      Align = alTop
+      BorderStyle = bsNone
+      Columns = <      
+        item
+          Caption = 'UTC'
+          Width = 80
+        end      
+        item
+          Caption = 'Call'
+          Width = 104
+        end      
+        item
+          Caption = 'Recv'
+          Width = 90
+        end      
+        item
+          Caption = 'Sent'
+          Width = 84
+        end      
+        item
+          Caption = 'Pref'
+        end      
+        item
+          Caption = 'Chk'
+          Width = 40
+        end      
+        item
+          Caption = 'Wpm'
+          Width = 40
+        end>
+      ColumnClick = False
+      Font.Color = clWindowText
+      Font.Height = -15
+      Font.Name = 'Monospace'
+      ParentFont = False
+      ParentShowHint = False
+      ReadOnly = True
+      RowSelect = True
+      ShowHint = True
+      TabStop = False
+      TabOrder = 0
+      ViewStyle = vsReport
+      OnCustomDrawSubItem = ListView2CustomDrawSubItem
+      OnSelectItem = ListView2SelectItem
+    end
+    object sbar: TPanel
+      Left = 0
+      Height = 22
+      Top = 332
+      Width = 550
+      Align = alBottom
+      Alignment = taLeftJustify
+      BevelOuter = bvNone
+      ParentBackground = False
+      TabOrder = 2
+      Visible = False
+    end
+    object Label23: TLabel
+      Left = 168
+      Height = 16
+      Top = 296
+      Width = 171
+      Caption = 'Linux porting   Nian WU6P'
+      Font.Color = clWindowText
+      Font.Height = -13
+      Font.Name = 'Monospace'
+      ParentFont = False
+    end
+  end
+  object Panel9: TPanel
+    Left = 552
+    Height = 397
+    Top = 2
+    Width = 212
+    Align = alRight
+    BevelOuter = bvNone
+    ClientHeight = 397
+    ClientWidth = 212
+    ParentBackground = False
+    TabOrder = 3
+    object GroupBox3: TGroupBox
+      Left = 5
+      Height = 106
+      Top = 240
+      Width = 196
+      Caption = ' Band Conditions '
+      ClientHeight = 77
+      ClientWidth = 186
+      ParentBackground = False
+      TabOrder = 0
+      object Label11: TLabel
+        Left = 144
+        Height = 15
+        Top = 11
+        Width = 42
+        Caption = 'Activity'
+      end
+      object CheckBox2: TCheckBox
+        Left = 12
+        Height = 18
+        Top = 56
+        Width = 51
+        Caption = 'QSB'
+        TabOrder = 0
+        TabStop = False
+        OnClick = CheckBoxClick
+      end
+      object CheckBox3: TCheckBox
+        Left = 13
+        Height = 18
+        Top = 32
+        Width = 54
+        Caption = 'QRM'
+        TabOrder = 1
+        TabStop = False
+        OnClick = CheckBoxClick
+      end
+      object CheckBox4: TCheckBox
+        Left = 12
+        Height = 18
+        Top = 8
+        Width = 53
+        Caption = 'QRN'
+        TabOrder = 2
+        TabStop = False
+        OnClick = CheckBoxClick
+      end
+      object CheckBox5: TCheckBox
+        Left = 76
+        Height = 18
+        Top = 8
+        Width = 63
+        Caption = 'Flutter'
+        TabOrder = 3
+        TabStop = False
+        OnClick = CheckBoxClick
+      end
+      object CheckBox6: TCheckBox
+        Left = 77
+        Height = 18
+        Top = 32
+        Width = 52
+        Caption = 'LIDs'
+        TabOrder = 4
+        TabStop = False
+        OnClick = CheckBoxClick
+      end
+      object SpinEdit3: TSpinEdit
+        Left = 144
+        Height = 21
+        Top = 32
+        Width = 37
+        MaxValue = 9
+        MinValue = 1
+        OnChange = SpinEdit3Change
+        TabStop = False
+        TabOrder = 5
+        Value = 3
+      end
+    end
+    object GroupBox1: TGroupBox
+      Left = 6
+      Height = 159
+      Top = 80
+      Width = 202
+      Caption = ' Station '
+      ClientHeight = 130
+      ClientWidth = 192
+      ParentBackground = False
+      TabOrder = 1
+      object Label4: TLabel
+        Left = 12
+        Height = 15
+        Top = 21
+        Width = 21
+        Caption = 'Call'
+      end
+      object Label5: TLabel
+        Left = 162
+        Height = 15
+        Top = 46
+        Width = 30
+        Caption = 'WPM'
+      end
+      object Label6: TLabel
+        Left = 12
+        Height = 15
+        Top = 46
+        Width = 60
+        Caption = 'CW Speed'
+      end
+      object Label7: TLabel
+        Left = 13
+        Height = 15
+        Top = 76
+        Width = 52
+        Caption = 'CW Pitch'
+      end
+      object Label9: TLabel
+        Left = 12
+        Height = 15
+        Top = 106
+        Width = 79
+        Caption = 'RX Bandwidth'
+      end
+      object Label18: TLabel
+        Left = 12
+        Height = 15
+        Top = 134
+        Width = 61
+        Caption = 'Mon. Level'
+      end
+      object Edit4: TEdit
+        Left = 45
+        Height = 22
+        Top = 15
+        Width = 89
+        CharCase = ecUppercase
+        Font.Color = clWindowText
+        Font.Height = -13
+        Font.Name = 'Monospace'
+        ParentFont = False
+        TabOrder = 0
+        Text = 'VE3NEA'
+        OnChange = Edit4Change
+        OnExit = Edit4Exit
+      end
+      object SpinEdit1: TSpinEdit
+        Left = 91
+        Height = 21
+        Top = 43
+        Width = 65
+        MaxValue = 120
+        MinValue = 10
+        OnChange = SpinEdit1Change
+        OnExit = SpinEdit1Exit
+        TabStop = False
+        TabOrder = 2
+        Value = 25
+      end
+      object CheckBox1: TCheckBox
+        Left = 140
+        Height = 18
+        Top = 17
+        Width = 51
+        Caption = 'QSK'
+        TabOrder = 1
+        TabStop = False
+        OnClick = CheckBox1Click
+      end
+      object ComboBox1: TComboBox
+        Left = 92
+        Height = 20
+        Top = 73
+        Width = 65
+        DropDownCount = 12
+        ItemHeight = 26
+        Items.Strings = (
+          '300 Hz'
+          '350 Hz'
+          '400 Hz'
+          '450 Hz'
+          '500 Hz'
+          '550 Hz'
+          '600 Hz'
+          '650 Hz'
+          '700 Hz'
+          '750 Hz'
+          '800 Hz'
+          '850 Hz'
+          '900 Hz'
+        )
+        Style = csDropDownList
+        TabOrder = 3
+        TabStop = False
+        OnChange = ComboBox1Change
+      end
+      object ComboBox2: TComboBox
+        Left = 92
+        Height = 20
+        Top = 102
+        Width = 65
+        DropDownCount = 12
+        ItemHeight = 26
+        Items.Strings = (
+          '100 Hz'
+          '150 Hz'
+          '200 Hz'
+          '250 Hz'
+          '300 Hz'
+          '350 Hz'
+          '400 Hz'
+          '450 Hz'
+          '500 Hz'
+          '550 Hz'
+          '600 Hz'
+        )
+        Style = csDropDownList
+        TabOrder = 4
+        TabStop = False
+        OnChange = ComboBox2Change
+      end
+    end
+    object Panel10: TPanel
+      Left = 0
+      Height = 37
+      Top = 360
+      Width = 212
+      Align = alBottom
+      BevelOuter = bvNone
+      ClientHeight = 37
+      ClientWidth = 212
+      ParentBackground = False
+      TabOrder = 2
+      object Label8: TLabel
+        Left = 179
+        Height = 15
+        Top = 13
+        Width = 24
+        Caption = 'min.'
+      end
+      object Label10: TLabel
+        Left = 107
+        Height = 15
+        Top = 13
+        Width = 16
+        Caption = 'for'
+      end
+      object SpinEdit2: TSpinEdit
+        Left = 128
+        Height = 21
+        Top = 10
+        Width = 45
+        MaxValue = 240
+        MinValue = 1
+        OnChange = SpinEdit2Change
+        TabStop = False
+        TabOrder = 0
+        Value = 30
+      end
+      object ToolBar1: TToolBar
+        Left = 6
+        Height = 29
+        Top = 2
+        Width = 97
+        Align = alNone
+        ButtonHeight = 30
+        ButtonWidth = 72
+        Caption = 'ToolBar1'
+        Flat = False
+        Indent = 3
+        List = True
+        ShowCaptions = True
+        TabOrder = 1
+        object ToolButton1: TToolButton
+          Tag = 1
+          Left = 3
+          Top = 2
+          AllowAllUp = True
+          AutoSize = True
+          Caption = '   Run   '
+          DropdownMenu = PopupMenu1
+          Grouped = True
+          OnClick = RunBtnClick
+          Style = tbsDropDown
+        end
+      end
+    end
+    object ContestGroup: TGroupBox
+      Left = 6
+      Height = 66
+      Top = 6
+      Width = 195
+      Caption = 'Contest'
+      ClientHeight = 37
+      ClientWidth = 185
+      ParentBackground = False
+      TabOrder = 3
+      object Label17: TLabel
+        Left = 12
+        Height = 15
+        Top = 47
+        Width = 55
+        Caption = 'Exchange'
+      end
+      object SimContestCombo: TComboBox
+        Left = 8
+        Height = 20
+        Top = 8
+        Width = 169
+        ItemHeight = 26
+        Style = csDropDownList
+        TabOrder = 0
+        TabStop = False
+        OnChange = SimContestComboChange
+      end
+      object ExchangeEdit: TEdit
+        Left = 76
+        Height = 21
+        Top = 44
+        Width = 116
+        CharCase = ecUppercase
+        TabOrder = 1
+        Text = '3A ON'
+        OnChange = ExchangeEditChange
+        OnExit = ExchangeEditExit
+      end
+    end
+  end
+  object MainMenu1: TMainMenu
+    object File1: TMenuItem
+      Caption = 'File'
+      OnClick = File1Click
+      object ViewScoreTable1: TMenuItem
+        Caption = 'View Score Table'
+        OnClick = ViewScoreTable1Click
+      end
+      object ViewScoreBoardMNU: TMenuItem
+        Caption = 'View Hi-Score web page...'
+        OnClick = ViewScoreBoardMNUClick
+      end
+      object N9: TMenuItem
+        Caption = '-'
+      end
+      object AudioRecordingEnabled1: TMenuItem
+        Caption = 'Audio Recording Enabled'
+        OnClick = AudioRecordingEnabled1Click
+      end
+      object PlayRecordedAudio1: TMenuItem
+        Caption = 'Play Recorded Audio'
+        Enabled = False
+        OnClick = PlayRecordedAudio1Click
+      end
+      object N8: TMenuItem
+        Caption = '-'
+      end
+      object Exit1: TMenuItem
+        Caption = 'Exit'
+        OnClick = Exit1Click
+      end
+    end
+    object Run1: TMenuItem
+      Caption = 'Run'
+      object PileUp1: TMenuItem
+        Tag = 1
+        Caption = 'Pile-Up'
+        ShortCut = 120
+        OnClick = RunMNUClick
+      end
+      object SingleCalls1: TMenuItem
+        Tag = 2
+        Caption = 'Single Calls'
+        ShortCut = 8312
+        OnClick = RunMNUClick
+      end
+      object Competition1: TMenuItem
+        Tag = 3
+        Caption = 'WPX Competition'
+        OnClick = RunMNUClick
+      end
+      object HSTCompetition2: TMenuItem
+        Tag = 4
+        Caption = 'HST Competition'
+        ShortCut = 16504
+        OnClick = RunMNUClick
+      end
+      object Stop1MNU: TMenuItem
+        Caption = 'Stop'
+        Enabled = False
+        OnClick = StopMNUClick
+      end
+    end
+    object Send1: TMenuItem
+      Caption = 'Send'
+      object CQ1: TMenuItem
+        Tag = 1
+        Caption = 'CQ'
+        ShortCut = 112
+        OnClick = SendClick
+      end
+      object Exchange1: TMenuItem
+        Tag = 2
+        Caption = 'Exchange'
+        ShortCut = 113
+        OnClick = SendClick
+      end
+      object TU1: TMenuItem
+        Tag = 3
+        Caption = 'TU'
+        ShortCut = 114
+        OnClick = SendClick
+      end
+      object MyCall1: TMenuItem
+        Tag = 4
+        Caption = 'My Call'
+        ShortCut = 115
+        OnClick = SendClick
+      end
+      object HisCall1: TMenuItem
+        Tag = 5
+        Caption = 'His Call'
+        ShortCut = 116
+        OnClick = SendClick
+      end
+      object QSOB41: TMenuItem
+        Tag = 6
+        Caption = 'QSO B4'
+        ShortCut = 117
+        OnClick = SendClick
+      end
+      object N1: TMenuItem
+        Tag = 7
+        Caption = '<?>'
+        ShortCut = 118
+        OnClick = SendClick
+      end
+      object AGN1: TMenuItem
+        Tag = 8
+        Caption = 'NIL'
+        ShortCut = 119
+        OnClick = SendClick
+      end
+      object NRQM: TMenuItem
+        Tag = 19
+        Caption = 'NR?'
+        ShortCut = 123
+        OnClick = SendClick
+      end
+    end
+    object Settings1: TMenuItem
+      Caption = 'Settings'
+      OnClick = Settings1Click
+      object Call1: TMenuItem
+        Caption = 'Call...'
+        OnClick = Call1Click
+      end
+      object QSK1: TMenuItem
+        Caption = 'QSK'
+        OnClick = QSK1Click
+      end
+      object CWSpeed1: TMenuItem
+        Caption = 'CW Speed'
+        object N10WPM1: TMenuItem
+          Tag = 10
+          Caption = '10 WPM'
+          OnClick = NWPMClick
+        end
+        object N15WPM1: TMenuItem
+          Tag = 15
+          Caption = '15 WPM'
+          OnClick = NWPMClick
+        end
+        object N20WPM1: TMenuItem
+          Tag = 20
+          Caption = '20 WPM'
+          OnClick = NWPMClick
+        end
+        object N25WPM1: TMenuItem
+          Tag = 25
+          Caption = '25 WPM'
+          OnClick = NWPMClick
+        end
+        object N30WPM1: TMenuItem
+          Tag = 30
+          Caption = '30 WPM'
+          OnClick = NWPMClick
+        end
+        object N35WPM1: TMenuItem
+          Tag = 35
+          Caption = '35 WPM'
+          OnClick = NWPMClick
+        end
+        object N40WPM1: TMenuItem
+          Tag = 40
+          Caption = '40 WPM'
+          OnClick = NWPMClick
+        end
+        object N45WPM1: TMenuItem
+          Tag = 45
+          Caption = '45 WPM'
+          OnClick = NWPMClick
+        end
+        object N50WPM1: TMenuItem
+          Tag = 50
+          Caption = '50 WPM'
+          OnClick = NWPMClick
+        end
+        object N55WPM1: TMenuItem
+          Tag = 55
+          Caption = '55 WPM'
+          OnClick = NWPMClick
+        end
+        object N60WPM1: TMenuItem
+          Tag = 60
+          Caption = '60 WPM'
+          OnClick = NWPMClick
+        end
+      end
+      object CWMinRxSpeed1: TMenuItem
+        Caption = 'CW Min Rx Speed'
+        object CWMinRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '-1'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '-2'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '-4'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '-6'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '-8'
+          OnClick = CWMinRxSpeedClick
+        end
+        object CWMinRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '-10'
+          OnClick = CWMinRxSpeedClick
+        end
+      end
+      object CWMaxRxSpeed1: TMenuItem
+        Caption = 'CW Max Rx Speed'
+        object CWMaxRxSpeedSet0: TMenuItem
+          Caption = '0'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet1: TMenuItem
+          Tag = 1
+          Caption = '+1'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet2: TMenuItem
+          Tag = 2
+          Caption = '+2'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet4: TMenuItem
+          Tag = 4
+          Caption = '+4'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet6: TMenuItem
+          Tag = 6
+          Caption = '+6'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet8: TMenuItem
+          Tag = 8
+          Caption = '+8'
+          OnClick = CWMaxRxSpeedClick
+        end
+        object CWMaxRxSpeedSet10: TMenuItem
+          Tag = 10
+          Caption = '+10'
+          OnClick = CWMaxRxSpeedClick
+        end
+      end
+      object CWBandwidth1: TMenuItem
+        Caption = 'CW Pitch'
+        object N300Hz1: TMenuItem
+          Caption = '300 Hz'
+          OnClick = Pitch1Click
+        end
+        object N350Hz1: TMenuItem
+          Tag = 1
+          Caption = '350 Hz'
+          OnClick = Pitch1Click
+        end
+        object N400Hz1: TMenuItem
+          Tag = 2
+          Caption = '400 Hz'
+          OnClick = Pitch1Click
+        end
+        object N450Hz1: TMenuItem
+          Tag = 3
+          Caption = '450 Hz'
+          OnClick = Pitch1Click
+        end
+        object N500Hz1: TMenuItem
+          Tag = 4
+          Caption = '500 Hz'
+          OnClick = Pitch1Click
+        end
+        object N550Hz1: TMenuItem
+          Tag = 5
+          Caption = '550 Hz'
+          OnClick = Pitch1Click
+        end
+        object N600Hz1: TMenuItem
+          Tag = 6
+          Caption = '600 Hz'
+          OnClick = Pitch1Click
+        end
+        object N650Hz1: TMenuItem
+          Tag = 7
+          Caption = '650 Hz'
+          OnClick = Pitch1Click
+        end
+        object N700Hz1: TMenuItem
+          Tag = 8
+          Caption = '700 Hz'
+          OnClick = Pitch1Click
+        end
+        object N750Hz1: TMenuItem
+          Tag = 9
+          Caption = '750 Hz'
+          OnClick = Pitch1Click
+        end
+        object N800Hz1: TMenuItem
+          Tag = 10
+          Caption = '800 Hz'
+          OnClick = Pitch1Click
+        end
+        object N850Hz1: TMenuItem
+          Tag = 11
+          Caption = '850 Hz'
+          OnClick = Pitch1Click
+        end
+        object N900Hz1: TMenuItem
+          Tag = 12
+          Caption = '900 Hz'
+          OnClick = Pitch1Click
+        end
+      end
+      object CWBandwidth2: TMenuItem
+        Caption = 'CW Bandwidth'
+        object N100Hz1: TMenuItem
+          Caption = '100 Hz'
+          OnClick = Bw1Click
+        end
+        object N150Hz1: TMenuItem
+          Tag = 1
+          Caption = '150 Hz'
+          OnClick = Bw1Click
+        end
+        object N200Hz1: TMenuItem
+          Tag = 2
+          Caption = '200 Hz'
+          OnClick = Bw1Click
+        end
+        object N250Hz1: TMenuItem
+          Tag = 3
+          Caption = '250 Hz'
+          OnClick = Bw1Click
+        end
+        object N300Hz2: TMenuItem
+          Tag = 4
+          Caption = '300 Hz'
+          OnClick = Bw1Click
+        end
+        object N350Hz2: TMenuItem
+          Tag = 5
+          Caption = '350 Hz'
+          OnClick = Bw1Click
+        end
+        object N400Hz2: TMenuItem
+          Tag = 6
+          Caption = '400 Hz'
+          OnClick = Bw1Click
+        end
+        object N450Hz2: TMenuItem
+          Tag = 7
+          Caption = '450 Hz'
+          OnClick = Bw1Click
+        end
+        object N500Hz2: TMenuItem
+          Tag = 8
+          Caption = '500 Hz'
+          OnClick = Bw1Click
+        end
+        object N550Hz2: TMenuItem
+          Tag = 9
+          Caption = '550 Hz'
+          OnClick = Bw1Click
+        end
+        object N600Hz2: TMenuItem
+          Tag = 10
+          Caption = '600 Hz'
+          OnClick = Bw1Click
+        end
+      end
+      object MonLevel1: TMenuItem
+        Caption = 'Mon. Level'
+        object N30dB1: TMenuItem
+          Tag = -60
+          Caption = '-60 dB'
+          OnClick = SelfMonClick
+        end
+        object N20dB1: TMenuItem
+          Tag = -30
+          Caption = '-30 dB'
+          OnClick = SelfMonClick
+        end
+        object N10dB1: TMenuItem
+          Tag = -15
+          Caption = '-15 dB'
+          OnClick = SelfMonClick
+        end
+        object N0dB1: TMenuItem
+          Caption = '0 dB'
+          OnClick = SelfMonClick
+        end
+      end
+      object NRDigits1: TMenuItem
+        Caption = 'Serial NR'
+        object SerialNRSet1: TMenuItem
+          Caption = 'Start of Contest (Default)'
+          Checked = True
+          OnClick = NRDigitsClick
+        end
+        object SerialNRSet2: TMenuItem
+          Tag = 1
+          Caption = 'Mid-Contest (50-500)'
+          OnClick = NRDigitsClick
+        end
+        object SerialNRSet3: TMenuItem
+          Tag = 2
+          Caption = 'End of Contest (500-5000)'
+          OnClick = NRDigitsClick
+        end
+        object SerialNRCustomRange: TMenuItem
+          Tag = 3
+          Caption = 'Custom Range...'
+          OnClick = SerialNRCustomRangeClick
+        end
+      end
+      object N6: TMenuItem
+        Caption = '-'
+      end
+      object QRN1: TMenuItem
+        Caption = 'QRN'
+        OnClick = LIDS1Click
+      end
+      object QRM1: TMenuItem
+        Caption = 'QRM'
+        OnClick = LIDS1Click
+      end
+      object QSB1: TMenuItem
+        Caption = 'QSB'
+        OnClick = LIDS1Click
+      end
+      object Flutter1: TMenuItem
+        Caption = 'Flutter'
+        OnClick = LIDS1Click
+      end
+      object LIDS1: TMenuItem
+        Caption = 'LIDs'
+        OnClick = LIDS1Click
+      end
+      object Activity1: TMenuItem
+        Caption = 'Activity'
+        object N11: TMenuItem
+          Tag = 1
+          Caption = '1'
+          OnClick = Activity1Click
+        end
+        object N21: TMenuItem
+          Tag = 2
+          Caption = '2'
+          OnClick = Activity1Click
+        end
+        object N31: TMenuItem
+          Tag = 3
+          Caption = '3'
+          OnClick = Activity1Click
+        end
+        object N41: TMenuItem
+          Tag = 4
+          Caption = '4'
+          OnClick = Activity1Click
+        end
+        object N51: TMenuItem
+          Tag = 5
+          Caption = '5'
+          OnClick = Activity1Click
+        end
+        object N61: TMenuItem
+          Tag = 6
+          Caption = '6'
+          OnClick = Activity1Click
+        end
+        object N71: TMenuItem
+          Tag = 7
+          Caption = '7'
+          OnClick = Activity1Click
+        end
+        object N81: TMenuItem
+          Tag = 8
+          Caption = '8'
+          OnClick = Activity1Click
+        end
+        object N91: TMenuItem
+          Tag = 9
+          Caption = '9'
+          OnClick = Activity1Click
+        end
+      end
+      object N7: TMenuItem
+        Caption = '-'
+      end
+      object Duration1: TMenuItem
+        Caption = 'Duration'
+        object N5min1: TMenuItem
+          Tag = 5
+          Caption = '5 min'
+          OnClick = Duration1Click
+        end
+        object N10min1: TMenuItem
+          Tag = 10
+          Caption = '10 min'
+          OnClick = Duration1Click
+        end
+        object N15min1: TMenuItem
+          Tag = 15
+          Caption = '15 min'
+          OnClick = Duration1Click
+        end
+        object N30min1: TMenuItem
+          Tag = 30
+          Caption = '30 min'
+          OnClick = Duration1Click
+        end
+        object N60min1: TMenuItem
+          Tag = 60
+          Caption = '60 min'
+          OnClick = Duration1Click
+        end
+        object N90min1: TMenuItem
+          Tag = 90
+          Caption = '90 min'
+          OnClick = Duration1Click
+        end
+        object N120min1: TMenuItem
+          Tag = 120
+          Caption = '120 min'
+          OnClick = Duration1Click
+        end
+      end
+      object Operator1: TMenuItem
+        Caption = 'HST Operator'
+        OnClick = Operator1Click
+      end
+      object mnuShowCallsignInfo: TMenuItem
+        Caption = 'Show Callsign Info'
+        OnClick = mnuShowCallsignInfoClick
+      end
+    end
+    object Help1: TMenuItem
+      Caption = 'Help'
+      object FirstTime1: TMenuItem
+        Caption = 'First Time Setup'
+        OnClick = FirstTime1Click
+      end
+      object WebPage1: TMenuItem
+        Caption = 'Community Edition Home Page'
+        OnClick = WebPage1Click
+      end
+      object Readme1: TMenuItem
+        Caption = 'Readme'
+        OnClick = Readme1Click
+      end
+      object N2: TMenuItem
+        Caption = '-'
+      end
+      object About1: TMenuItem
+        Caption = 'About Morse Runner'
+        OnClick = About1Click
+      end
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    object PileupMNU: TMenuItem
+      Tag = 1
+      Caption = 'Pile-Up'
+      OnClick = RunMNUClick
+    end
+    object SingleCallsMNU: TMenuItem
+      Tag = 2
+      Caption = 'Single Calls'
+      OnClick = RunMNUClick
+    end
+    object CompetitionMNU: TMenuItem
+      Tag = 3
+      Caption = 'WPX Competition'
+      OnClick = RunMNUClick
+    end
+    object HSTCompetition1: TMenuItem
+      Tag = 4
+      Caption = 'HST Competition'
+      OnClick = RunMNUClick
+    end
+    object StopMNU: TMenuItem
+      Caption = 'Stop'
+      Enabled = False
+      OnClick = StopMNUClick
+    end
+  end
+end
