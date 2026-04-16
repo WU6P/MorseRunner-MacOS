@@ -58,7 +58,7 @@ var
 begin
   Calls.Clear;
 
-  FileName := {$ifdef FPC}GetDataPath.GetDataPath{$else}ExtractFilePath(ParamStr(0)){$endif} + 'Master.dta';
+  FileName := {$ifdef FPC}GetDataPath.GetDataPath{$else}ExtractFilePath(ParamStr(0)){$endif} + 'MASTER.DTA';
   if not FileExists(FileName) then Exit;
 
   with TFileStream.Create(FileName, fmOpenRead) do

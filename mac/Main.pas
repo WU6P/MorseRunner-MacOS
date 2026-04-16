@@ -715,7 +715,7 @@ begin
   VolumeSlider1.Parent := GroupBox1;
   VolumeSlider1.Left := 92;
   VolumeSlider1.Top := 129;
-  VolumeSlider1.Width := 60;
+  VolumeSlider1.Width := 65;
   VolumeSlider1.Height := 20;
   VolumeSlider1.DbMax := 0;
   VolumeSlider1.DbScale := 60;
@@ -731,6 +731,7 @@ begin
   Globals.GSBar          := sbar;
   Globals.GMemo1         := Memo1;
   Globals.GPaintBox1     := PaintBox1;
+  Panel11.Width := 228;
   Globals.GPanel11       := Panel11;
   Globals.GPanel2        := Panel2;
   Globals.GPanel4        := Panel4;
@@ -1917,7 +1918,7 @@ procedure TMainForm.Readme1Click(Sender: TObject);
 var
   FileName: string;
 begin
-  FileName := GetDataPath.GetDataPath + 'readme.txt';
+  FileName := GetDataPath.GetDataPath + 'Readme.txt';
   OpenDocument(FileName);
 end;
 

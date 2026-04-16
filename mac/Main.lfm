@@ -1,7 +1,7 @@
 object MainForm: TMainForm
-  Left = 70
+  Left = 173
   Height = 544
-  Top = 156
+  Top = 329
   Width = 764
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -284,11 +284,11 @@ object MainForm: TMainForm
       Left = 529
       Height = 85
       Top = 44
-      Width = 191
+      Width = 210
       BevelOuter = bvLowered
       Caption = '0'
       ClientHeight = 85
-      ClientWidth = 191
+      ClientWidth = 178
       Font.Color = clWindowText
       Font.Height = -19
       Font.Style = [fsBold]
@@ -299,7 +299,7 @@ object MainForm: TMainForm
         Left = 1
         Height = 83
         Top = 1
-        Width = 189
+        Width = 200
         Align = alClient
         BorderStyle = bsNone
         Columns = <        
@@ -309,12 +309,12 @@ object MainForm: TMainForm
           item
             Alignment = taCenter
             Caption = 'Raw'
-            Width = 52
+            Width = 65
           end        
           item
             Alignment = taCenter
             Caption = 'Verified'
-            Width = 48
+            Width = 61
           end>
         ColumnClick = False
         Font.Color = clWindowText
@@ -545,8 +545,8 @@ object MainForm: TMainForm
       Left = 168
       Height = 16
       Top = 296
-      Width = 171
-      Caption = 'MacOS porting   Nian WU6P'
+      Width = 207
+      Caption = 'MacOS/Linux porting   Nian WU6P'
       Font.Color = clWindowText
       Font.Height = -13
       Font.Name = 'Consolas'
@@ -567,7 +567,7 @@ object MainForm: TMainForm
     object GroupBox3: TGroupBox
       Left = 5
       Height = 106
-      Top = 240
+      Top = 248
       Width = 196
       Caption = ' Band Conditions '
       ClientHeight = 77
@@ -645,12 +645,12 @@ object MainForm: TMainForm
       end
     end
     object GroupBox1: TGroupBox
-      Left = 6
-      Height = 159
-      Top = 80
+      Left = 5
+      Height = 186
+      Top = 62
       Width = 202
       Caption = ' Station '
-      ClientHeight = 130
+      ClientHeight = 157
       ClientWidth = 192
       ParentBackground = False
       TabOrder = 1
@@ -735,10 +735,10 @@ object MainForm: TMainForm
         OnClick = CheckBox1Click
       end
       object ComboBox1: TComboBox
-        Left = 92
+        Left = 97
         Height = 20
         Top = 73
-        Width = 65
+        Width = 76
         DropDownCount = 12
         ItemHeight = 26
         Items.Strings = (
@@ -762,10 +762,10 @@ object MainForm: TMainForm
         OnChange = ComboBox1Change
       end
       object ComboBox2: TComboBox
-        Left = 92
+        Left = 97
         Height = 20
-        Top = 102
-        Width = 65
+        Top = 104
+        Width = 76
         DropDownCount = 12
         ItemHeight = 26
         Items.Strings = (
@@ -854,11 +854,11 @@ object MainForm: TMainForm
     end
     object ContestGroup: TGroupBox
       Left = 6
-      Height = 66
-      Top = 6
+      Height = 50
+      Top = 5
       Width = 195
       Caption = 'Contest'
-      ClientHeight = 37
+      ClientHeight = 21
       ClientWidth = 185
       ParentBackground = False
       TabOrder = 3
@@ -872,7 +872,7 @@ object MainForm: TMainForm
       object SimContestCombo: TComboBox
         Left = 8
         Height = 20
-        Top = 8
+        Top = 0
         Width = 169
         ItemHeight = 26
         Style = csDropDownList

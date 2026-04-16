@@ -250,7 +250,7 @@
     <Version Value="11"/>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="mac;mac/VCL;VCL;Util"/>
+      <OtherUnitFiles Value="lib/$(TargetCPU)-$(TargetOS);.;mac;mac/VCL;VCL;Util"/>
       <UnitOutputDirectory Value="lib/$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

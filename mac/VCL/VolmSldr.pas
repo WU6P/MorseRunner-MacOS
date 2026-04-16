@@ -143,10 +143,12 @@ end;
 
 
 function TVolumeSlider.ThumbRect: TRect;
+const
+  RightPad = 5; // extra space between track end and right border
 var
   x: integer;
 begin
-  x := FMargin + Round((Width - 2 * FMargin) * FValue);
+  x := FMargin + Round((Width - 2 * FMargin - RightPad) * FValue);
   Result := Rect(x-4, VMargin div 2, x+5, Height - (VMargin div 2) + 1);
 end;
 
@@ -154,47 +156,35 @@ end;
 procedure TVolumeSlider.Paint;
 var
   R: TRect;
-  Bmp: TBitMap;
 begin
-  Bmp := TBitMap.Create;
-  try
-    Bmp.Width := Width;
-    Bmp.Height := Height;
-    with Bmp.Canvas do
-    begin
-      // Background
-      Brush.Color := clBtnFace;
-      FillRect(Rect(0, 0, Width, Height));
-      // Triangle ramp
-      Pen.Color := clWhite;
-      MoveTo(FMargin, Height - VMargin);
-      LineTo(Width - FMargin, Height - VMargin);
-      LineTo(Width - FMargin, VMargin);
-      Pen.Color := clBtnShadow;
-      LineTo(FMargin - 1, Height - VMargin - 1);
-      // Overload indicator box (sunken border + optional red fill)
-      R := Bounds(FMargin + 1, VMargin - 2, 7, 5);
-      DrawSunkenBorder(Bmp.Canvas, R);
-      FillInterior(Bmp.Canvas, R);
-      if FOverloaded then
-      begin
-        Brush.Color := clRed;
-        R := Bounds(FMargin + 2, VMargin - 1, 5, 3);
-        FillRect(R);
-      end;
-      // Thumb
-      R := ThumbRect;
-      if Enabled then
-        DrawButtonFace(Bmp.Canvas, R)
-      else
-      begin
-        DrawSunkenBorder(Bmp.Canvas, R);
-        FillInterior(Bmp.Canvas, R);
-      end;
-    end;
-    Canvas.Draw(0, 0, Bmp);
-  finally
-    Bmp.Free;
+  // Draw directly on Canvas — avoids LCL/Cocoa bitmap alpha transparency issues.
+  // Solid white background.
+  Canvas.Brush.Color := clWhite;
+  Canvas.Brush.Style := bsSolid;
+  Canvas.Pen.Color   := clSilver;
+  Canvas.Pen.Style   := psSolid;
+  Canvas.Rectangle(0, 0, Width, Height);
+  // Triangle ramp — right end uses same RightPad offset as ThumbRect
+  Canvas.Pen.Color := clBtnShadow;
+  Canvas.MoveTo(FMargin, Height - VMargin);
+  Canvas.LineTo(Width - FMargin - 5, Height - VMargin);
+  Canvas.LineTo(Width - FMargin - 5, VMargin);
+  Canvas.LineTo(FMargin - 1, Height - VMargin - 1);
+  // Overload indicator: tiny 3×3 red dot, only shown when overloaded
+  if FOverloaded then
+  begin
+    Canvas.Brush.Color := clRed;
+    R := Bounds(FMargin + 1, VMargin - 1, 3, 3);
+    Canvas.FillRect(R);
+  end;
+  // Thumb
+  R := ThumbRect;
+  if Enabled then
+    DrawButtonFace(Canvas, R)
+  else
+  begin
+    DrawSunkenBorder(Canvas, R);
+    FillInterior(Canvas, R);
   end;
 end;
 

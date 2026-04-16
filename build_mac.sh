@@ -73,6 +73,26 @@ if [ ! -f mac/VCL/AudioBackend2.o ] || [ mac/VCL/AudioBackend2.m -nt mac/VCL/Aud
     mac/VCL/AudioBackend2.m
 fi
 
+# Delete the binary so lazbuild is forced to relink even when only
+# implementation code (e.g. Paint procedures) changed with no interface change.
+rm -f "$BINARY"
+
+# Sync .lfm files from source into the output dir. The lpi puts $(ProjOutDir)
+# first in FPC's include path, so FPC reads .lfm resources from there — edits
+# to mac/*.lfm must be mirrored here before building.
+mkdir -p lib/aarch64-darwin
+for lfm in mac/*.lfm mac/VCL/*.lfm; do
+  [ -f "$lfm" ] && cp "$lfm" "lib/aarch64-darwin/$(basename "$lfm")"
+done
+
+# Force recompile of Main.pas and its dependency chain. When Main.ppu is
+# deleted alone, FPC cascades: ContestFactory.ppu has a stale checksum for
+# ArrlFd.ppu and triggers a ContestFactory recompile, which then can't find
+# ARRLFD source. Delete the full chain so FPC recompiles all three cleanly.
+rm -f lib/aarch64-darwin/Main.ppu \
+      lib/aarch64-darwin/ArrlFd.ppu \
+      lib/aarch64-darwin/ContestFactory.ppu
+
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
 # new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
 # Output is captured; only shown on a real compile failure (missing ppaslink.sh).
