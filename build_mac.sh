@@ -85,13 +85,11 @@ for lfm in mac/*.lfm mac/VCL/*.lfm; do
   [ -f "$lfm" ] && cp "$lfm" "lib/aarch64-darwin/$(basename "$lfm")"
 done
 
-# Force recompile of Main.pas and its dependency chain. When Main.ppu is
-# deleted alone, FPC cascades: ContestFactory.ppu has a stale checksum for
-# ArrlFd.ppu and triggers a ContestFactory recompile, which then can't find
-# ARRLFD source. Delete the full chain so FPC recompiles all three cleanly.
-rm -f lib/aarch64-darwin/Main.ppu \
-      lib/aarch64-darwin/ArrlFd.ppu \
-      lib/aarch64-darwin/ContestFactory.ppu
+# Delete all project .ppu files so FPC always does a clean recompile of
+# project units. Incremental builds with selective ppu deletion cause
+# persistent checksum mismatch cascades (ArrlFd ↔ ContestFactory ↔ Main).
+# LCL/RTL ppus in ~/.lazarus are untouched, so those still cache correctly.
+rm -f lib/aarch64-darwin/*.ppu
 
 # Run lazbuild. It will compile Pascal → assemble → then try to link with the
 # new ld and fail. We catch that failure, patch ppaslink.sh, and re-run link.
