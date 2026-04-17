@@ -112,8 +112,13 @@ if [ $LAZBUILD_EXIT -ne 0 ]; then
 fi
 
 # ── Copy binary to project root as MorseRunner ───────────────────────────────
-# No wrapper script needed: GDK_NATIVE_WINDOWS=1 is set in the .desktop Exec
-# so it applies when launched from a file manager. The harmless GTK message
+# No wrapper script needed: GDK_NATIVE_WINDOWS=1 / GDK_SCALE=1 / GDK_DPI_SCALE=1
+# are set in the .desktop Exec so they apply when launched from a file manager.
+# GDK_SCALE=1 + GDK_DPI_SCALE=1 fix GTK2's broken behaviour under Linux
+# fractional scaling (125 %, 150 % …): GTK2 ignores fractional DPI and renders
+# widgets at raw LFM pixel sizes, making the window appear too small.  Pinning
+# both vars to 1 forces 1× rendering regardless of the desktop scale factor.
+# The harmless GTK message
 # "Failed to load module canberra-gtk-module" is benign and acceptable in a
 # terminal; install libcanberra-gtk-module to silence it if preferred.
 BINARY="$OUT_DIR/MorseRunner"
@@ -140,12 +145,14 @@ cp "$PROJ_ROOT/MorseRunner.png" "$ICON_DIR/MorseRunner.png"
 # Write and install .desktop file
 # GDK_NATIVE_WINDOWS=1 prevents GTK2 depth-mismatch visual glitches with
 # modern compositors; env(1) is the portable way to set it in an Exec= line.
+# GDK_SCALE=1 GDK_DPI_SCALE=1 fix window appearing too small under fractional
+# scaling — GTK2 does not support fractional DPI and renders at raw pixels.
 cat > "$DESKTOP_DIR/MorseRunner.desktop" << EOF
 [Desktop Entry]
 Type=Application
 Name=Morse Runner
 Comment=CW contesting simulator
-Exec=env GDK_NATIVE_WINDOWS=1 $PROJ_ROOT/MorseRunner %U
+Exec=env GDK_NATIVE_WINDOWS=1 GDK_SCALE=1 GDK_DPI_SCALE=1 $PROJ_ROOT/MorseRunner %U
 Icon=MorseRunner
 Terminal=false
 Categories=HamRadio;Education;
@@ -158,7 +165,7 @@ cat > "$PROJ_ROOT/MorseRunner.desktop" << EOF
 Type=Application
 Name=Morse Runner
 Comment=CW contesting simulator
-Exec=env GDK_NATIVE_WINDOWS=1 $PROJ_ROOT/MorseRunner %U
+Exec=env GDK_NATIVE_WINDOWS=1 GDK_SCALE=1 GDK_DPI_SCALE=1 $PROJ_ROOT/MorseRunner %U
 Icon=MorseRunner
 Terminal=false
 Categories=HamRadio;Education;
@@ -189,5 +196,5 @@ done
 # ── Optionally launch ───────────────────────────────────────────────────────
 if [ "$1" = "run" ]; then
   echo "Launching MorseRunner..."
-  GDK_NATIVE_WINDOWS=1 "$PROJ_ROOT/MorseRunner"
+  GDK_NATIVE_WINDOWS=1 GDK_SCALE=1 GDK_DPI_SCALE=1 "$PROJ_ROOT/MorseRunner"
 fi
