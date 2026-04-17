@@ -14,6 +14,7 @@ uses
   Graphics, Controls, Forms, Dialogs, StdCtrls, ExtCtrls,
   ComCtrls, Spin, Buttons, Menus,
   LCLIntf, LCLType,
+  {$ifdef LCLgtk2} gtk2, {$endif}
   SndCustm, SndOut, SndTypes, WavFile,
   Contest, Ini, VolmSldr, VolumCtl, ExchFields, Station,
   Crc32, ScoreDlg,
@@ -280,6 +281,8 @@ type
     procedure Shape2MouseDown(Sender: TObject; Button: TMouseButton;
       Shift: TShiftState; X, Y: Integer);
     procedure RunBtnClick(Sender: TObject);
+    procedure RunPanelPaint(Sender: TObject);
+    procedure RunDropBtnClick(Sender: TObject);
     procedure RunMNUClick(Sender: TObject);
     procedure StopMNUClick(Sender: TObject);
     procedure ViewScoreBoardMNUClick(Sender: TObject);
@@ -349,6 +352,10 @@ type
     AlSoundOut1: TAlSoundOut;
     AlWavFile1: TAlWavFile;
     VolumeSlider1: TVolumeSlider;
+    RunPanel: TPaintBox;
+    RunPanelColor: TColor;
+    RunPanelCaption: string;
+    RunDropBtn: TSpeedButton;
 
     procedure Run(Value: TRunMode);
     procedure RunStop;          // wrapper: Run(rmStop) — assignable to TNoArgProc
@@ -678,6 +685,24 @@ procedure TMainForm.FormCreate(Sender: TObject);
 begin
   Randomize;
 
+  // GTK2 enforces widget minimum height via theme inner-border/xthickness,
+  // completely ignoring the font size.  Override here before any widget is
+  // realized so the compact style is picked up on first show.
+  {$ifdef LCLgtk2}
+  gtk_rc_parse_string(PChar(
+    'style "mr_compact" {'                                         + #10 +
+    '  GtkEntry::inner-border      = { 1, 1, 1, 1 }'             + #10 +
+    '  GtkSpinButton::inner-border = { 1, 1, 1, 1 }'             + #10 +
+    '  GtkButton::inner-border     = { 1, 1, 1, 1 }'             + #10 +
+    '  xthickness = 1'                                            + #10 +
+    '  ythickness = 1'                                            + #10 +
+    '}'                                                           + #10 +
+    'widget_class "*.GtkEntry"      style "mr_compact"'           + #10 +
+    'widget_class "*.GtkSpinButton" style "mr_compact"'           + #10 +
+    'widget_class "*.GtkComboBox"   style "mr_compact"'           + #10
+  ));
+  {$endif}
+
   Memo1.Font.Name := 'Consolas';
   Memo1.Font.Size := 11;
 
@@ -713,9 +738,9 @@ begin
 
   VolumeSlider1 := TVolumeSlider.Create(GroupBox1);
   VolumeSlider1.Parent := GroupBox1;
-  VolumeSlider1.Left := 92;
-  VolumeSlider1.Top := 129;
-  VolumeSlider1.Width := 65;
+  VolumeSlider1.Left := 97;
+  VolumeSlider1.Top := 134;
+  VolumeSlider1.Width := 76;
   VolumeSlider1.Height := 20;
   VolumeSlider1.DbMax := 0;
   VolumeSlider1.DbScale := 60;
@@ -731,7 +756,41 @@ begin
   Globals.GSBar          := sbar;
   Globals.GMemo1         := Memo1;
   Globals.GPaintBox1     := PaintBox1;
-  Panel11.Width := 228;
+  // Align Panel11 and Panel2 (timer) to mirror the right-panel (Panel9) margins:
+  // Panel9 internal controls start at Left=6 inside Panel9 (x=552), end at ~x=753,
+  // leaving ~11px right gap.  Match that here.
+  Panel11.Left   := 558;
+  Panel11.Width  := 195;
+  Panel11.Top    := 33;
+  Panel11.Height := 100;   // leaves ~12px gap at Panel1 bottom
+  Panel2.Left    := 558;
+  Panel2.Width   := 195;
+
+  // Replace TToolBar/TToolButton with a color-capable TPanel button
+  ToolBar1.Visible := False;
+
+  RunPanelColor   := $0090EE90;  // light green
+  RunPanelCaption := 'Run';
+
+  RunPanel := TPaintBox.Create(Panel10);
+  RunPanel.Parent := Panel10;
+  RunPanel.Left := 6;
+  RunPanel.Top := 8;
+  RunPanel.Width := 72;
+  RunPanel.Height := 27;
+  RunPanel.Cursor := crHandPoint;
+  RunPanel.Font.Size := 12;
+  RunPanel.OnPaint := RunPanelPaint;
+  RunPanel.OnClick := RunBtnClick;
+
+  RunDropBtn := TSpeedButton.Create(Panel10);
+  RunDropBtn.Parent := Panel10;
+  RunDropBtn.Left := 80;
+  RunDropBtn.Top := 11;
+  RunDropBtn.Width := 16;
+  RunDropBtn.Height := 21;
+  RunDropBtn.Caption := #$25BE;  // ▾ small down-pointing triangle
+  RunDropBtn.OnClick := RunDropBtnClick;
   Globals.GPanel11       := Panel11;
   Globals.GPanel2        := Panel2;
   Globals.GPanel4        := Panel4;
@@ -765,11 +824,58 @@ end;
 
 
 procedure TMainForm.FormShow(Sender: TObject);
+var
+  editBottom, btnsGap: Integer;
 begin
   // On macOS, when launched from Terminal the terminal retains keyboard focus.
   // BringToFront activates the entire app, SetFocus gives focus to the input field.
   Application.BringToFront;
   Edit4.SetFocus;
+
+  {$ifdef LCLgtk2}
+  // Hide scrollbars — GTK2 shows them even when all rows fit.
+  gtk_scrolled_window_set_policy(
+    PGtkScrolledWindow(Pointer(ListView1.Handle)),
+    GTK_POLICY_NEVER,
+    GTK_POLICY_NEVER);
+
+  // Override the theme's bold column-header font.
+  // Name the widget so the RC selector is scoped to this ListView only.
+  gtk_widget_set_name(PGtkWidget(Pointer(ListView1.Handle)), 'MRScoreList');
+  gtk_rc_parse_string(PChar(
+    'style "mr-score-hdr" {'                                       + #10 +
+    '  font_name = "Monospace 10"'                                 + #10 +
+    '}'                                                            + #10 +
+    'widget "*.MRScoreList.GtkTreeView.GtkButton*"'                + #10 +
+    '  style "mr-score-hdr"'                                       + #10
+  ));
+  gtk_widget_reset_rc_styles(PGtkWidget(Pointer(ListView1.Handle)));
+  {$endif}
+
+  // GTK2 auto-sizes TEdit based on font + theme padding, ignoring the Height
+  // property set in the .lfm. On ARM64/GTK2 the edit box can be 30-38px tall,
+  // which causes the F-key speed-buttons (Top=66) to overlap the edit boxes
+  // (Top=33). Recalculate button positions after GTK2 has realised the controls.
+  editBottom := Edit1.Top + Edit1.Height + 6;  // 6 px gap below edit boxes
+  if editBottom > SpeedButton4.Top then
+  begin
+    btnsGap        := SpeedButton8.Top - SpeedButton4.Top;  // preserve row spacing
+    SpeedButton4.Top  := editBottom;
+    SpeedButton5.Top  := editBottom;
+    SpeedButton6.Top  := editBottom;
+    SpeedButton7.Top  := editBottom;
+    SpeedButton8.Top  := editBottom + btnsGap;
+    SpeedButton9.Top  := SpeedButton8.Top;
+    SpeedButton10.Top := SpeedButton8.Top;
+    SpeedButton11.Top := SpeedButton8.Top;
+    // Also push the RIT slider (Panel8) below the second button row
+    Panel8.Top := SpeedButton8.Top + SpeedButton8.Height + 2;
+  end;
+
+  // Recompute Panel11 height now that GTK2 has finalised Panel1's real ClientHeight.
+  // This guarantees a visible gap between Panel11's bottom and the window edge
+  // regardless of how GTK2 sized Panel1 at runtime.
+  Panel11.Height := Panel1.ClientHeight - Panel11.Top - 15;
 end;
 
 
@@ -2045,6 +2151,12 @@ begin
   SetToolbuttonDown(ToolButton1, not BStop);
 
   ToolButton1.Caption := IfThen(BStop, '   Run   ', '  Stop  ');
+  if Assigned(RunPanel) then
+  begin
+    RunPanelCaption := IfThen(BStop, 'Run', 'Stop');
+    RunPanelColor   := IfThen(BStop, TColor($0090EE90), TColor($008080FF));
+    RunPanel.Invalidate;
+  end;
 
   EnableCtl(CheckBox2, not BCompet);
   EnableCtl(CheckBox3, not BCompet);
@@ -2166,6 +2278,44 @@ begin
     Run(DefaultRunMode)
   else
     Tst.FStopPressed := true;
+end;
+
+procedure TMainForm.RunPanelPaint(Sender: TObject);
+var
+  C: TCanvas;
+  R: TRect;
+  TS: TTextStyle;
+begin
+  C := RunPanel.Canvas;
+  R := Rect(0, 0, RunPanel.Width, RunPanel.Height);
+  // Clear bounding box to parent background so corners look transparent
+  C.Brush.Color := Panel10.Color;
+  C.Brush.Style := bsSolid;
+  C.Pen.Style   := psClear;
+  C.FillRect(R);
+  // Draw rounded rectangle
+  C.Brush.Color := RunPanelColor;
+  C.Pen.Color   := clGray;
+  C.Pen.Style   := psSolid;
+  C.RoundRect(R.Left, R.Top, R.Right, R.Bottom, 8, 8);
+  // Draw centred label
+  C.Font.Assign(RunPanel.Font);
+  C.Font.Color  := clBlack;
+  C.Brush.Style := bsClear;
+  FillChar(TS, SizeOf(TS), 0);
+  TS.Alignment  := taCenter;
+  TS.Layout     := tlCenter;
+  TS.SingleLine := True;
+  TS.Clipping   := True;
+  C.TextRect(R, 0, 0, RunPanelCaption, TS);
+end;
+
+procedure TMainForm.RunDropBtnClick(Sender: TObject);
+var
+  P: TPoint;
+begin
+  P := RunDropBtn.ClientToScreen(Point(0, RunDropBtn.Height));
+  PopupMenu1.Popup(P.X, P.Y);
 end;
 
 procedure TMainForm.SetToolbuttonDown(AToolbutton: TToolButton; ADown: boolean);

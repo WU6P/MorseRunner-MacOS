@@ -34,12 +34,12 @@ object MainForm: TMainForm
   end
   object Panel1: TPanel
     Left = 0
-    Height = 135
-    Top = 409
+    Height = 145
+    Top = 399
     Width = 764
     Align = alBottom
     BevelOuter = bvLowered
-    ClientHeight = 135
+    ClientHeight = 145
     ClientWidth = 764
     ParentBackground = False
     TabOrder = 0
@@ -150,7 +150,7 @@ object MainForm: TMainForm
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -11
       Font.Name = 'Monospace'
       Font.Style = [fsBold]
       MaxLength = 12
@@ -169,7 +169,7 @@ object MainForm: TMainForm
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -11
       Font.Name = 'Monospace'
       Font.Style = [fsBold]
       MaxLength = 10
@@ -187,7 +187,7 @@ object MainForm: TMainForm
       AutoSelect = False
       CharCase = ecUppercase
       Font.Color = clWindowText
-      Font.Height = -16
+      Font.Height = -11
       Font.Name = 'Monospace'
       Font.Style = [fsBold]
       MaxLength = 4
@@ -302,23 +302,23 @@ object MainForm: TMainForm
         Width = 189
         Align = alClient
         BorderStyle = bsNone
-        Columns = <        
+        Columns = <
           item
-            Width = 68
-          end        
+            Width = 63
+          end
           item
             Alignment = taCenter
             Caption = 'Raw'
-            Width = 52
-          end        
+            Width = 65
+          end
           item
             Alignment = taCenter
             Caption = 'Verified'
-            Width = 48
+            Width = 65
           end>
         ColumnClick = False
         Font.Color = clWindowText
-        Font.Height = -12
+        Font.Height = -9
         Font.Name = 'Monospace'
         ParentFont = False
         ReadOnly = True
@@ -567,7 +567,7 @@ object MainForm: TMainForm
     object GroupBox3: TGroupBox
       Left = 5
       Height = 106
-      Top = 240
+      Top = 248
       Width = 196
       Caption = ' Band Conditions '
       ClientHeight = 77
@@ -632,10 +632,10 @@ object MainForm: TMainForm
         OnClick = CheckBoxClick
       end
       object SpinEdit3: TSpinEdit
-        Left = 144
+        Left = 136
         Height = 21
         Top = 32
-        Width = 37
+        Width = 50
         MaxValue = 9
         MinValue = 1
         OnChange = SpinEdit3Change
@@ -645,12 +645,12 @@ object MainForm: TMainForm
       end
     end
     object GroupBox1: TGroupBox
-      Left = 6
-      Height = 159
-      Top = 80
+      Left = 5
+      Height = 186
+      Top = 62
       Width = 202
       Caption = ' Station '
-      ClientHeight = 130
+      ClientHeight = 157
       ClientWidth = 192
       ParentBackground = False
       TabOrder = 1
@@ -703,7 +703,7 @@ object MainForm: TMainForm
         Width = 89
         CharCase = ecUppercase
         Font.Color = clWindowText
-        Font.Height = -13
+        Font.Height = -9
         Font.Name = 'Monospace'
         ParentFont = False
         TabOrder = 0
@@ -716,6 +716,9 @@ object MainForm: TMainForm
         Height = 21
         Top = 43
         Width = 65
+        Font.Height = -9
+        Font.Name = 'Sans'
+        ParentFont = False
         MaxValue = 120
         MinValue = 10
         OnChange = SpinEdit1Change
@@ -735,12 +738,15 @@ object MainForm: TMainForm
         OnClick = CheckBox1Click
       end
       object ComboBox1: TComboBox
-        Left = 92
+        Left = 97
         Height = 20
         Top = 73
-        Width = 65
+        Width = 76
         DropDownCount = 12
-        ItemHeight = 26
+        ItemHeight = 0
+        Font.Height = -11
+        Font.Name = 'Sans'
+        ParentFont = False
         Items.Strings = (
           '300 Hz'
           '350 Hz'
@@ -762,12 +768,15 @@ object MainForm: TMainForm
         OnChange = ComboBox1Change
       end
       object ComboBox2: TComboBox
-        Left = 92
+        Left = 97
         Height = 20
-        Top = 102
-        Width = 65
+        Top = 104
+        Width = 76
         DropDownCount = 12
-        ItemHeight = 26
+        ItemHeight = 0
+        Font.Height = -11
+        Font.Name = 'Sans'
+        ParentFont = False
         Items.Strings = (
           '100 Hz'
           '150 Hz'
@@ -789,34 +798,37 @@ object MainForm: TMainForm
     end
     object Panel10: TPanel
       Left = 0
-      Height = 37
-      Top = 360
+      Height = 42
+      Top = 355
       Width = 212
       Align = alBottom
       BevelOuter = bvNone
-      ClientHeight = 37
+      ClientHeight = 42
       ClientWidth = 212
       ParentBackground = False
       TabOrder = 2
       object Label8: TLabel
         Left = 179
         Height = 15
-        Top = 13
+        Top = 14
         Width = 24
         Caption = 'min.'
       end
       object Label10: TLabel
         Left = 107
         Height = 15
-        Top = 13
+        Top = 14
         Width = 16
         Caption = 'for'
       end
       object SpinEdit2: TSpinEdit
         Left = 128
         Height = 21
-        Top = 10
+        Top = 11
         Width = 45
+        Font.Height = -9
+        Font.Name = 'Sans'
+        ParentFont = False
         MaxValue = 240
         MinValue = 1
         OnChange = SpinEdit2Change
@@ -854,11 +866,11 @@ object MainForm: TMainForm
     end
     object ContestGroup: TGroupBox
       Left = 6
-      Height = 66
-      Top = 6
+      Height = 50
+      Top = 5
       Width = 195
       Caption = 'Contest'
-      ClientHeight = 37
+      ClientHeight = 21
       ClientWidth = 185
       ParentBackground = False
       TabOrder = 3
@@ -872,7 +884,7 @@ object MainForm: TMainForm
       object SimContestCombo: TComboBox
         Left = 8
         Height = 20
-        Top = 8
+        Top = 0
         Width = 169
         ItemHeight = 26
         Style = csDropDownList
