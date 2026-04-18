@@ -22,14 +22,14 @@ Audio uses CoreAudio on macOS and PulseAudio on Linux.
 
 ## Installation, Option A — Use the Pre-compiled Binary (no build tools needed)
 
-Download the zip for your platform from the
+Download the file for your platform from the
 [Releases](https://github.com/WU6P/MorseRunner-Linux-MacOS/releases) page:
 
 | File | Platform |
 |---|---|
 | `MorseRunner_macOS_arm64.zip` | macOS Apple Silicon |
-| `MorseRunner_linux_x86_64.zip` | Linux x86_64 |
-| `MorseRunner_linux_aarch64.zip` | Linux ARM64 |
+| `MorseRunner-x86_64.AppImage` | Linux x86_64 |
+| `MorseRunner-aarch64.AppImage` | Linux ARM64 |
 
 ### macOS ARM64
 
@@ -43,12 +43,21 @@ open MorseRunner.app
 
 ### Linux x86_64 / ARM64
 
+AppImages are self-contained — no installation or `sudo` required.
+
 ```bash
-unzip MorseRunner_linux_x86_64.zip      # or _aarch64.zip on ARM hardware
-cd MorseRunner_linux_x86_64             # or _aarch64
-./install_runtime.sh                    # installs libpulse0 + GTK2 (once, needs sudo)
-./MorseRunner                           # run
+# x86_64:
+chmod +x MorseRunner-x86_64.AppImage
+./MorseRunner-x86_64.AppImage
+
+# ARM64:
+chmod +x MorseRunner-aarch64.AppImage
+./MorseRunner-aarch64.AppImage
 ```
+
+> PulseAudio must be running (standard on most desktop Linux distros).
+> If you see a FUSE error on first run, install `libfuse2`:
+> `sudo apt install libfuse2`
 
 ---
 
