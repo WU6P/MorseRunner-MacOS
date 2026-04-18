@@ -7,9 +7,9 @@
 # macOS output : MorseRunner_macOS_arm64.zip       — contains MorseRunner.app
 #                (drag-to-Applications, no deps needed)
 #
-# Linux output : MorseRunner_linux_x86_64.zip      — contains binary + data files
-#              : MorseRunner_linux_aarch64.zip      — same, ARM64 build
-#                (run ./install_runtime.sh once for libpulse0 + GTK2, then ./MorseRunner)
+# Linux output : MorseRunner-x86_64.AppImage        — self-contained, no install needed
+#              : MorseRunner-aarch64.AppImage        — same, ARM64 build
+#                (chmod +x, then ./MorseRunner-*.AppImage — no apt/install step)
 #
 # Usage:
 #   ./dist.sh
@@ -115,27 +115,24 @@ package_macos() {
 }
 
 # ═════════════════════════════════════════════════════════════════════════════
-# Linux packaging
+# Linux packaging — produces a self-contained AppImage
 # ═════════════════════════════════════════════════════════════════════════════
 package_linux() {
   local ARCH
   ARCH="$(uname -m)"   # x86_64 or aarch64
-  local ZIP_NAME="MorseRunner_linux_${ARCH}.zip"
-  local ZIP_PATH="$PROJ_ROOT/$ZIP_NAME"
-  local STAGE_DIR="/tmp/MorseRunner_linux_${ARCH}"
-  local STAGE_APP="$STAGE_DIR/MorseRunner_linux_${ARCH}"
+  local APPIMAGE_NAME="MorseRunner-${ARCH}.AppImage"
+  local APPIMAGE_PATH="$PROJ_ROOT/$APPIMAGE_NAME"
+  local APPDIR="/tmp/MorseRunner_AppDir_${ARCH}"
+  local TOOLS_DIR="$PROJ_ROOT/tools"
 
-  echo "==> Platform: Linux ($ARCH)"
+  echo "==> Platform: Linux ($ARCH) — building AppImage"
 
-  # ── Verify build output exists ─────────────────────────────────────────────
-  # build_linux.sh in MR_merge copies the binary directly to ./MorseRunner
-  # (no .bin split — GDK env vars live in the .desktop file, not a wrapper).
+  # ── Verify build output ────────────────────────────────────────────────────
   if [ ! -f "$PROJ_ROOT/MorseRunner" ] || [ ! -x "$PROJ_ROOT/MorseRunner" ]; then
     echo "ERROR: MorseRunner binary not found in $PROJ_ROOT" >&2
     echo "  Run ./build_linux.sh first." >&2
     exit 1
   fi
-  # Quick sanity check: must be an ELF binary, not a shell script
   if file "$PROJ_ROOT/MorseRunner" | grep -q "shell script"; then
     echo "ERROR: $PROJ_ROOT/MorseRunner is a shell script, not a compiled binary." >&2
     echo "  Re-run ./build_linux.sh to produce a fresh build." >&2
@@ -146,124 +143,137 @@ package_linux() {
   echo "==> Checking required data files..."
   check_data_files
 
-  # ── Stage files ────────────────────────────────────────────────────────────
-  echo "==> Staging files in $STAGE_APP ..."
-  rm -rf "$STAGE_DIR"
-  mkdir -p "$STAGE_APP"
+  # ── Download appimagetool (no linuxdeploy needed) ──────────────────────────
+  echo "==> Checking packaging tools in $TOOLS_DIR ..."
+  mkdir -p "$TOOLS_DIR"
 
-  # The binary goes in as MorseRunner.bin; we create a wrapper MorseRunner
-  # that sets the required GTK2 env vars (GDK_NATIVE_WINDOWS, GDK_SCALE).
-  # This matches what the .desktop Exec= line does, so the app behaves
-  # the same whether launched from a terminal or a file manager.
-  cp "$PROJ_ROOT/MorseRunner" "$STAGE_APP/MorseRunner.bin"
-  chmod +x "$STAGE_APP/MorseRunner.bin"
+  local APPIMAGETOOL="$TOOLS_DIR/appimagetool-${ARCH}.AppImage"
+  if [ ! -f "$APPIMAGETOOL" ]; then
+    echo "    Downloading appimagetool-${ARCH}..."
+    curl -fsSL -o "$APPIMAGETOOL" \
+      "https://github.com/AppImage/appimagetool/releases/download/continuous/appimagetool-${ARCH}.AppImage"
+    chmod +x "$APPIMAGETOOL"
+  else
+    echo "    appimagetool: cached"
+  fi
 
-  cat > "$STAGE_APP/MorseRunner" << 'WRAPPER'
-#!/bin/bash
-# Launcher: sets GTK2 env vars needed for correct rendering on modern desktops.
-# GDK_NATIVE_WINDOWS=1  — prevents depth-mismatch glitches with compositors
-# GDK_SCALE=1           — disable GTK2's broken fractional-DPI scaling
-# GDK_DPI_SCALE=1       — keep widgets at intended pixel sizes
-DIR="$(cd "$(dirname "$0")" && pwd)"
-exec env GDK_NATIVE_WINDOWS=1 GDK_SCALE=1 GDK_DPI_SCALE=1 \
-  "$DIR/MorseRunner.bin" "$@" 2>/dev/null
-WRAPPER
-  chmod +x "$STAGE_APP/MorseRunner"
+  # ── Build AppDir skeleton ──────────────────────────────────────────────────
+  echo "==> Building AppDir at $APPDIR ..."
+  rm -rf "$APPDIR"
+  mkdir -p "$APPDIR/usr/bin"
+  mkdir -p "$APPDIR/usr/lib"
+  mkdir -p "$APPDIR/usr/share/MorseRunner"
+  mkdir -p "$APPDIR/usr/share/applications"
+  mkdir -p "$APPDIR/usr/share/icons/hicolor/256x256/apps"
 
+  # Binary (unmodified — no RPATH patching)
+  cp "$PROJ_ROOT/MorseRunner" "$APPDIR/usr/bin/MorseRunner"
+  chmod +x "$APPDIR/usr/bin/MorseRunner"
+
+  # ── Bundle libpulse only ───────────────────────────────────────────────────
+  # GTK2 is left to the system — bundling it causes GType double-registration
+  # crashes because GTK2's theme/IM plugins always load the system libgdk.
+  # libpulse is the only non-universal dep: we copy just those two .so files.
+  # LD_LIBRARY_PATH in AppRun makes the binary find them; no RPATH patching.
+  echo "==> Bundling libpulse libraries..."
+  local pulse_found=0
+  while IFS= read -r line; do
+    # ldd output:  "libpulse.so.0 => /usr/lib/.../libpulse.so.0 (0x...)"
+    local libpath
+    libpath="$(echo "$line" | awk '{print $3}')"
+    if [ -f "$libpath" ]; then
+      cp "$libpath" "$APPDIR/usr/lib/"
+      echo "    Bundled: $(basename "$libpath")"
+      pulse_found=1
+    fi
+  done < <(ldd "$PROJ_ROOT/MorseRunner" 2>/dev/null | grep -E 'libpulse')
+
+  if [ "$pulse_found" = "0" ]; then
+    echo "    WARNING: libpulse not found in binary's ldd output — audio may not work."
+    echo "    Is libpulse0 installed on this build machine? (apt install libpulse0)"
+  fi
+
+  # Data files
   for f in "${DATA_FILES[@]}"; do
-    cp "$PROJ_ROOT/$f" "$STAGE_APP/"
+    cp "$PROJ_ROOT/$f" "$APPDIR/usr/share/MorseRunner/$f"
   done
 
-  [ -f "$PROJ_ROOT/MorseRunner.png" ] && cp "$PROJ_ROOT/MorseRunner.png" "$STAGE_APP/"
+  # Icon
+  if [ -f "$PROJ_ROOT/MorseRunner.png" ]; then
+    cp "$PROJ_ROOT/MorseRunner.png" \
+       "$APPDIR/usr/share/icons/hicolor/256x256/apps/MorseRunner.png"
+    cp "$PROJ_ROOT/MorseRunner.png" "$APPDIR/MorseRunner.png"
+  fi
 
-  # ── Write .desktop file ────────────────────────────────────────────────────
-  cat > "$STAGE_APP/MorseRunner.desktop" << 'DESKTOP'
+  # .desktop file (required at AppDir root AND in usr/share/applications/)
+  cat > "$APPDIR/MorseRunner.desktop" << 'DESKTOP'
 [Desktop Entry]
 Version=1.0
 Type=Application
-Name=MorseRunner
-Comment=Morse code CW contest practice simulator
-Exec=bash -c 'cd "$(dirname "%k")" && ./MorseRunner'
+Name=Morse Runner
+Comment=CW contesting simulator
+Exec=MorseRunner
 Icon=MorseRunner
 Terminal=false
 Categories=HamRadio;Education;
 Keywords=morse;cw;ham radio;amateur radio;contest;
 DESKTOP
+  cp "$APPDIR/MorseRunner.desktop" "$APPDIR/usr/share/applications/MorseRunner.desktop"
 
-  # ── Write install_runtime.sh for recipients ───────────────────────────────
-  cat > "$STAGE_APP/install_runtime.sh" << 'INSTALL'
+  # ── Write AppRun ───────────────────────────────────────────────────────────
+  cat > "$APPDIR/AppRun" << 'APPRUN'
 #!/bin/bash
-# install_runtime.sh — Install runtime libraries for MorseRunner (Linux)
-#
-# Run once on a new machine. Does NOT need a compiler or Lazarus.
+# AppRun — MorseRunner AppImage entry point.
+# $APPDIR is set by the AppImage runtime; derive defensively for extract-and-run.
+APPDIR_SELF="$(dirname "$(readlink -f "$0")")"
+export APPDIR="${APPDIR:-$APPDIR_SELF}"
 
-set -e
-SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# GTK2 rendering fixes
+export GDK_NATIVE_WINDOWS=1   # prevents depth-mismatch glitches with compositors
+export GDK_SCALE=1            # disable GTK2 fractional-DPI scaling
+export GDK_DPI_SCALE=1        # keep widgets at intended pixel sizes
+export GTK_MODULES=""         # suppress canberra-gtk-module warning
 
-echo "==> Installing MorseRunner runtime dependencies..."
-if ! command -v apt-get &>/dev/null; then
-  echo "ERROR: This script requires apt (Debian/Ubuntu)." >&2
-  echo "  On other distros, install: libpulse0, libgtk2.0-0, libcanberra-gtk0" >&2
+# libpulse is bundled in usr/lib/. LD_LIBRARY_PATH lets the binary find it.
+# ONLY libpulse* is present there — GTK2/GLib/X11 remain system-provided,
+# so there are no GType double-registration conflicts.
+export LD_LIBRARY_PATH="$APPDIR/usr/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
+# Verify GTK2 is available on this system (nearly universal on any Linux desktop)
+if ! ldconfig -p 2>/dev/null | grep -q 'libgtk-x11-2.0.so\|libgtk-x11-2\.0\.so\.0'; then
+  echo "ERROR: libgtk2.0-0 not found on this system." >&2
+  echo "  Install with: sudo apt install libgtk2.0-0" >&2
   exit 1
 fi
 
-sudo apt-get install -y \
-  libpulse0 \
-  libgtk2.0-0 \
-  libcanberra-gtk0 \
-  libcanberra-gtk-module
+exec "$APPDIR/usr/bin/MorseRunner" "$@" 2>/dev/null
+APPRUN
+  chmod +x "$APPDIR/AppRun"
 
-echo ""
-echo "==> Runtime libraries installed."
+  # ── Package into final AppImage ────────────────────────────────────────────
+  echo "==> Creating $APPIMAGE_NAME ..."
+  rm -f "$APPIMAGE_PATH"
+  APPIMAGE_EXTRACT_AND_RUN=1 "$APPIMAGETOOL" \
+      "$APPDIR" \
+      "$APPIMAGE_PATH"
+  chmod +x "$APPIMAGE_PATH"
 
-# ── Optional: register in application menu ────────────────────────────────
-DESKTOP_SRC="$SCRIPT_DIR/MorseRunner.desktop"
-ICON_SRC="$SCRIPT_DIR/MorseRunner.png"
-DESKTOP_DIR="$HOME/.local/share/applications"
-ICON_DIR="$HOME/.local/share/icons"
-
-echo ""
-read -r -p "Register MorseRunner in your application menu? [y/N] " REPLY
-if [[ "$REPLY" =~ ^[Yy]$ ]]; then
-  mkdir -p "$DESKTOP_DIR" "$ICON_DIR"
-
-  sed "s|Exec=.*|Exec=bash -c 'cd \"$SCRIPT_DIR\" \&\& ./MorseRunner'|" \
-    "$DESKTOP_SRC" > "$DESKTOP_DIR/MorseRunner.desktop"
-
-  if [ -f "$ICON_SRC" ]; then
-    cp "$ICON_SRC" "$ICON_DIR/MorseRunner.png"
-    sed -i "s|^Icon=.*|Icon=$ICON_DIR/MorseRunner.png|" \
-      "$DESKTOP_DIR/MorseRunner.desktop"
-  fi
-
-  chmod +x "$DESKTOP_DIR/MorseRunner.desktop"
-  echo "  Registered: $DESKTOP_DIR/MorseRunner.desktop"
-  echo "  You may need to log out/in for it to appear in the menu."
-fi
-
-echo ""
-echo "Done. Run the app with:"
-echo "  cd \"$SCRIPT_DIR\""
-echo "  ./MorseRunner"
-INSTALL
-  chmod +x "$STAGE_APP/install_runtime.sh"
-
-  # ── Create zip ─────────────────────────────────────────────────────────────
-  echo "==> Creating $ZIP_NAME ..."
-  rm -f "$ZIP_PATH"
-  cd "$STAGE_DIR"
-  zip -r "$ZIP_PATH" "MorseRunner_linux_${ARCH}/"
+  # ── Cleanup temp AppDir ────────────────────────────────────────────────────
+  rm -rf "$APPDIR"
 
   local SIZE
-  SIZE="$(du -sh "$ZIP_PATH" | cut -f1)"
+  SIZE="$(du -sh "$APPIMAGE_PATH" | cut -f1)"
   echo ""
-  echo "Done: $ZIP_PATH  ($SIZE)"
+  echo "Done: $APPIMAGE_PATH  ($SIZE)"
   echo ""
-  echo "Recipients:"
-  echo "  unzip $ZIP_NAME"
-  echo "  cd MorseRunner_linux_${ARCH}"
-  echo "  ./install_runtime.sh    # once — installs libpulse0 + GTK2"
-  echo "  ./MorseRunner           # run"
+  echo "Recipients — no apt/install step needed on standard Ubuntu 22.04+ desktops:"
+  echo "  chmod +x $APPIMAGE_NAME"
+  echo "  ./$APPIMAGE_NAME"
+  echo ""
+  echo "  If FUSE is unavailable (Ubuntu 24.04+):"
+  echo "  APPIMAGE_EXTRACT_AND_RUN=1 ./$APPIMAGE_NAME"
+  echo ""
+  echo "  Requires: libgtk2.0-0 (standard desktop dep) + PulseAudio or PipeWire-pulse"
 }
 
 # ═════════════════════════════════════════════════════════════════════════════

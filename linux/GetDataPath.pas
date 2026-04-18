@@ -16,9 +16,21 @@ uses SysUtils;
 
 function GetDataPath: string;
 var
-  ExeDir: string;
+  AppDir, DataDir, ExeDir: string;
 begin
-  // On Linux there is no .app bundle — data files live next to the binary.
+  // Inside an AppImage, $APPDIR is set by the runtime to the squashfs mount root.
+  // Data files are installed at $APPDIR/usr/share/MorseRunner/.
+  AppDir := GetEnvironmentVariable('APPDIR');
+  if AppDir <> '' then
+  begin
+    DataDir := AppDir + '/usr/share/MorseRunner/';
+    if DirectoryExists(DataDir) then
+    begin
+      Result := DataDir;
+      Exit;
+    end;
+  end;
+  // Fallback: flat-zip layout — data files live next to the binary.
   ExeDir := ExtractFilePath(ParamStr(0));
   Result := ExeDir;
 end;

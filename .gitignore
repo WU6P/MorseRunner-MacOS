@@ -110,6 +110,11 @@ MorseRunner.stat
 # Ignore my project's .ini file. This user file is regenerated at runtime.
 MorseRunner.ini
 
+# AppImage packaging tools (downloaded at build time, not tracked)
+tools/appimagetool-*.AppImage
+tools/linuxdeploy-*.AppImage
+tools/linuxdeploy-plugin-gtk.sh
+
 # macOS build artifacts
 .DS_Store
 mac/VCL/AudioBackend2.o
